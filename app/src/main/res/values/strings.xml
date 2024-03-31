@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">shoppingList_SemPraca</string>
+    <string name="app_name">ShopList</string>
+    <string name="add_product">Add Product</string>
+    <string name="summary">Summary</string>
+    <string name="habits">Habits</string>
+    <string name="back_button">Back</string>
 </resources>
