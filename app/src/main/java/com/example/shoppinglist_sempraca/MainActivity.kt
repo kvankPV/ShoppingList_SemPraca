@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             ShoppingList_SemPracaTheme {
-                ShoppingScreen()
+                ShoppingListScreen()
             }
         }
     }

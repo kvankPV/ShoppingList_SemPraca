@@ -9,7 +9,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,7 +16,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
-enum class ShoppingScreenTab(@StringRes val title: Int) {
+enum class ShoppingListScreenTab(@StringRes val title: Int) {
     Home(title = R.string.app_name),
     Product(title = R.string.add_product),
     Summary(title = R.string.summary),
@@ -26,8 +25,8 @@ enum class ShoppingScreenTab(@StringRes val title: Int) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShoppingScreenBar(
-    currentScreen: ShoppingScreenTab,
+fun ShoppingListTopBar(
+    currentScreen: ShoppingListScreenTab,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
     modifier: Modifier = Modifier
@@ -52,7 +51,7 @@ fun ShoppingScreenBar(
 }
 
 @Composable
-fun ShoppingScreen(
+fun ShoppingListScreen(
     /*viewModel: OrderViewModel = viewModel(),*/
     navController: NavHostController = rememberNavController()
 ) {
