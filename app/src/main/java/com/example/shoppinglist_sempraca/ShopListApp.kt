@@ -1,42 +1,38 @@
 package com.example.shoppinglist_sempraca
 
-import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 
-enum class ShoppingListScreenTab(@StringRes val title: Int) {
-    Home(title = R.string.app_name),
-    Product(title = R.string.add_product),
-    Summary(title = R.string.summary),
-    Habits(title = R.string.habits)
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShoppingListTopBar(
-    currentScreen: ShoppingListScreenTab,
+    modifier: Modifier = Modifier,
+    title: String,
     canNavigateBack: Boolean,
-    navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
+    navigateUp: () -> Unit = {},
+    scrollBehavior: TopAppBarScrollBehavior? = null,
+    addMenu: Boolean
 ) {
-    TopAppBar(
-        title = { Text(stringResource(currentScreen.title)) },
+    CenterAlignedTopAppBar(
+        title = { Text(title) },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
         modifier = modifier,
+        scrollBehavior = scrollBehavior,
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = navigateUp) {
@@ -46,13 +42,18 @@ fun ShoppingListTopBar(
                     )
                 }
             }
+            //Dropdown Menu with Edit, Delete
+            if (addMenu) {
+                IconButton(onClick = { /*TODO*/ }) {
+
+                }
+            }
         }
     )
 }
 
 @Composable
-fun ShoppingListScreen(
-    /*viewModel: OrderViewModel = viewModel(),*/
+fun ShoppingListApp(
     navController: NavHostController = rememberNavController()
 ) {
 
