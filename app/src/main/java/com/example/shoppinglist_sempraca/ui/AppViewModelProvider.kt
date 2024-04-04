@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.shoppinglist_sempraca.ShopListApplication
 import com.example.shoppinglist_sempraca.ui.home.HomeViewModel
+import com.example.shoppinglist_sempraca.ui.home.ItemEntryViewModel
 
 object AppViewModelProvider {
     val factory = viewModelFactory {
@@ -13,7 +14,10 @@ object AppViewModelProvider {
         initializer {
             HomeViewModel(shopListApplication().container.itemsRepository)
         }
-        // Ini
+        // Ini for EntryViewModel
+        initializer {
+            ItemEntryViewModel(shopListApplication().container.itemsRepository)
+        }
     }
 }
 

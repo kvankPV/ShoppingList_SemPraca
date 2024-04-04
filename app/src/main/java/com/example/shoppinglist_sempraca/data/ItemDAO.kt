@@ -19,9 +19,27 @@ interface ItemDAO {
     @Delete
     suspend fun delete(item: Item)
 
-    @Query("SELECT * from items where name = :name")
+    @Query("SELECT * from items WHERE name = :name")
     fun getItem(name: String): Flow<Item>
 
-    @Query("SELECT * FROM items")
+    @Query("SELECT * from items")
     fun getAllItems(): Flow<List<Item>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertProduct(product: Product)
+
+    @Update
+    suspend fun updateProduct(product: Product)
+
+    @Delete
+    suspend fun deleteProduct(product: Product)
+
+    @Query("SELECT * from products WHERE id = :id and itemName = :itemName")
+    fun getProduct(id: Int, itemName: String): Flow<Product>
+
+    @Query("SELECT * from products")
+    fun getAllProducts(): Flow<List<Product>>
+
+    @Query("SELECT * from products WHERE itemName = :itemName")
+    fun getAllProductsFromItem(itemName: String): Flow<List<Product>>
 }

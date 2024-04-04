@@ -11,5 +11,4 @@ class ShopListApplication : Application() {
         super.onCreate()
         container = AppDataContainer(this)
     }
-
 }

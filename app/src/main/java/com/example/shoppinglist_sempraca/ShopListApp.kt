@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.example.shoppinglist_sempraca.ui.navigation.ListNavHost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -23,8 +24,7 @@ fun ShoppingListTopBar(
     title: String,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    addMenu: Boolean
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     CenterAlignedTopAppBar(
         title = { Text(title) },
@@ -42,12 +42,6 @@ fun ShoppingListTopBar(
                     )
                 }
             }
-            //Dropdown Menu with Edit, Delete
-            if (addMenu) {
-                IconButton(onClick = { /*TODO*/ }) {
-
-                }
-            }
         }
     )
 }
@@ -56,5 +50,5 @@ fun ShoppingListTopBar(
 fun ShoppingListApp(
     navController: NavHostController = rememberNavController()
 ) {
-
+    ListNavHost(navController = navController)
 }

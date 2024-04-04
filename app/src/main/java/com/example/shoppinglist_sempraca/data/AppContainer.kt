@@ -8,6 +8,6 @@ interface AppContainer {
 
 class AppDataContainer(private val context: Context) : AppContainer {
     override val itemsRepository: ItemsRepository by lazy {
-        OfflineItemsRepository(ItemDatabase.getDatabase(context).itemDao())
+        OfflineItemsRepository(ItemDatabase.getDatabase(context).itemDAO())
     }
 }

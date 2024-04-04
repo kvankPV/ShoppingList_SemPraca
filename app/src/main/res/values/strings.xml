@@ -8,4 +8,6 @@
     <string name="expand">Expand</string>
     <string name="expand_button_content_desc">Expand Button</string>
     <string name="no_items_in_list">Empty List. Click + to add one</string>
+    <string name="submit">Submit</string>
+    <string name="entry_name">Enter Name:</string>
 </resources>
