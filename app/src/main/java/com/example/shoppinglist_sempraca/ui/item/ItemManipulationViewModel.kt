@@ -1,4 +1,4 @@
-package com.example.shoppinglist_sempraca.ui.home
+package com.example.shoppinglist_sempraca.ui.item
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -7,9 +7,8 @@ import androidx.lifecycle.ViewModel
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.ItemsRepository
 
-//insert items and validation
-class ItemEntryViewModel (private val itemsRepository: ItemsRepository) : ViewModel() {
-
+//Insert, update, delete items. with validation?
+class ItemManipulationViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
     /**
      * Holds current item ui state
      */
@@ -25,46 +24,75 @@ class ItemEntryViewModel (private val itemsRepository: ItemsRepository) : ViewMo
             ItemUiState(itemDetails = itemDetails, isEntryValid = validateInput(itemDetails))
     }
 
-    /**
-     * Inserts an [Item] in the Room database
-     */
-    suspend fun saveItem() {
+    suspend fun insertItem() {
         if (validateInput()) {
             itemsRepository.insertItem(itemUiState.itemDetails.toItem())
         }
     }
 
-    private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
-        return with(uiState) {
-            name.isNotBlank() || isVisible.isNotBlank() || totalPrice.isNotBlank()
+    /**
+     * Sets the [itemUiState] to the [item] that the user wants to manipulate.
+     */
+    fun setCurrentItem(item: Item) {
+        itemUiState = item.toItemUiState(isEntryValid = validateInput(item.toItemDetails()))
+    }
+
+    suspend fun updateItem() {
+        if (validateInput()) {
+            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
         }
     }
-}
 
+    suspend fun deleteItem(item: Item) {
+        itemsRepository.deleteItem(item)
+    }
+
+    private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
+        return with(uiState) {
+            name.isNotBlank()
+        }
+    }
+    //TODO 2 different validations ?
+}
+/**
+ * Represents Ui State for an Item.
+ */
 data class ItemUiState(
     val itemDetails: ItemDetails = ItemDetails(),
     val isEntryValid: Boolean = false
 )
 
 data class ItemDetails(
+    val id: Int = 0,
     val name: String = "",
     val isVisible: String = "",
     val totalPrice: String = ""
 )
 
+/**
+ * Extension function to convert [ItemUiState] to [Item].
+ */
 fun ItemDetails.toItem(): Item = Item (
+    id = id,
     name = name,
     isVisible = isVisible.toBooleanStrictOrNull() ?: true,
     totalPrice = totalPrice.toDoubleOrNull() ?: 0.0
 )
 
+/**
+ * Extension function to convert [Item] to [ItemUiState].
+ */
 fun Item.toItemUiState(isEntryValid: Boolean = false): ItemUiState = ItemUiState(
     itemDetails = this.toItemDetails(),
     isEntryValid = isEntryValid
 )
 
+/**
+ * Extension function to convert [Item] to [ItemDetails].
+ */
 fun Item.toItemDetails(): ItemDetails = ItemDetails(
+    id = id,
     name = name,
-    isVisible = isVisible.toString(),
     totalPrice = totalPrice.toString(),
+    isVisible = isVisible.toString()
 )

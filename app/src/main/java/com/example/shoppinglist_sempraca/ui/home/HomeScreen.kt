@@ -1,11 +1,12 @@
 package com.example.shoppinglist_sempraca.ui.home
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,28 +16,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material3.BottomSheetDefaults
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,6 +49,8 @@ import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
 import com.example.shoppinglist_sempraca.ui.AppViewModelProvider
 import com.example.shoppinglist_sempraca.ui.home.HomeDestination.titleRes
+import com.example.shoppinglist_sempraca.ui.item.ItemManipulationScreen
+import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
 import com.example.shoppinglist_sempraca.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 
@@ -60,38 +59,40 @@ object HomeDestination : NavigationDestination {
     override val titleRes = R.string.app_name
 }
 
-//Inšpirované z tohto zdroja:
+/*
+Important behavior for coroutineScopes:
+    If the user rotates the screen very fast, the operation may get cancelled
+    and the item may not be saved/updated in the Database. This is because when config
+    change occurs, the Activity will be recreated and the rememberCoroutineScope will
+    be cancelled - since the scope is bound to composition.
+ */
+
+//Inspired by this source:
 //https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ModalBottomSheet(kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.material3.SheetState,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Color,kotlin.Function0,androidx.compose.foundation.layout.WindowInsets,androidx.compose.material3.ModalBottomSheetProperties,kotlin.Function1)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen (
     modifier: Modifier = Modifier,
-    homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.factory),
-    itemEntryViewModel: ItemEntryViewModel = viewModel(factory = AppViewModelProvider.factory)
+    homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.factory)
 ) {
     val homeUiState by homeViewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-
-    var openBottomSheet by rememberSaveable { mutableStateOf(false) }
+    var showItemAddScreen by remember {
+        mutableStateOf(false)
+    }
     val scope = rememberCoroutineScope()
-    val skipPartiallyExpanded by remember { mutableStateOf(false) }
-    val edgeToEdgeEnabled by remember { mutableStateOf(false) }
-    val bottomSheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = skipPartiallyExpanded
-    )
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
             ShoppingListTopBar(
                 title = stringResource(titleRes),
-                canNavigateBack = false,
                 scrollBehavior = scrollBehavior
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { openBottomSheet = true },
+                onClick = {showItemAddScreen = true},
                 shape = MaterialTheme.shapes.medium,
                 modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
             ) {
@@ -107,43 +108,26 @@ fun HomeScreen (
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            viewmodel = homeViewModel
+            homeViewModel = homeViewModel
         )
-        if (openBottomSheet) {
-            val windowInsets = if (edgeToEdgeEnabled)
-                WindowInsets(0) else BottomSheetDefaults.windowInsets
-
-            ModalBottomSheet(
-                onDismissRequest = { openBottomSheet = false },
-                sheetState = bottomSheetState,
-                windowInsets = windowInsets
-            ) {
-
-                val isValid: Boolean = itemEntryViewModel.itemUiState.isEntryValid
-                val itemDetails: ItemDetails = itemEntryViewModel.itemUiState.itemDetails
-                val onItemValueChange: (ItemDetails) -> Unit = itemEntryViewModel::updateUiState
-                Column {
-                    OutlinedTextField(modifier = Modifier.fillMaxWidth(),
-                        value = itemDetails.name,
-                        onValueChange = {onItemValueChange(itemDetails.copy(name = it))},
-                        singleLine = true,
-                        label = { Text( text = stringResource(id = R.string.entry_name)
-                    )})
-                    Button(onClick = { scope.launch { itemEntryViewModel.saveItem() }
-                        openBottomSheet = false},
-                        enabled = isValid) {
-                        Text(text = stringResource(id = R.string.submit))
-                    }
-                }
-
-            }
-        }
+    }
+    if (showItemAddScreen) {
+        val itemManipulationViewModel: ItemManipulationViewModel = viewModel(factory = AppViewModelProvider.factory)
+        ItemManipulationScreen(
+            itemUiState = itemManipulationViewModel.itemUiState,
+            onItemValueChange = itemManipulationViewModel::updateUiState,
+            onSaveClick = { scope.launch { itemManipulationViewModel.insertItem() } } ,
+            onDismissRequest = { showItemAddScreen = false },
+            isAddingNewItem = true
+        )
     }
 }
 
 @Composable
 private fun HomeBody(
-    itemList: List<Item>, modifier: Modifier = Modifier, viewmodel: HomeViewModel
+    itemList: List<Item>,
+    modifier: Modifier = Modifier,
+    homeViewModel: HomeViewModel
 ) {
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -156,10 +140,9 @@ private fun HomeBody(
             )
         } else {
             ShopList(itemList = itemList,
-                onItemClick = {item ->
-                              viewmodel.getProductsFromItem(item.name)},
+                onItemClick = {item -> homeViewModel.getProductsFromItem(item.id)},
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
-                viewmodel = viewmodel
+                homeViewModel = homeViewModel
                 )
         }
     }
@@ -169,31 +152,39 @@ private fun HomeBody(
 private fun ShopList(
     itemList: List<Item>,
     onItemClick: (Item) -> Unit,
-    viewmodel: HomeViewModel,
+    homeViewModel: HomeViewModel,
     modifier: Modifier = Modifier
 ) {
     //TODO If count of ticked of products = the size of list & both are not zero, then isVisible = false
     LazyColumn (modifier = modifier) {
-        items (items = itemList.filter{it.isVisible}, key = {it.name}) {
+        items (items = itemList.filter{it.isVisible}, key = {it.id}) {
                 item -> ListCard (item = item,
                     modifier = Modifier
                         .padding(dimensionResource(id = R.dimen.padding_small))
                         .clickable { onItemClick(item) },
-                    products = viewmodel.getProductsFromItem(item.name).collectAsState(initial= emptyList()).value
+                    products = homeViewModel.getProductsFromItem(item.id).collectAsState(initial= emptyList()).value
                 )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ListCard(
-    item: Item, products: List<Product>, modifier: Modifier = Modifier
+    item: Item,
+    products: List<Product>,
+    modifier: Modifier = Modifier
 ) {
     var expanded by remember {
         mutableStateOf(false)
     }
+    var dropdownMenuExpanded by remember { mutableStateOf(false) }
+
     Card(
-        modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = modifier.combinedClickable(
+            onClick = {expanded = !expanded},
+            onLongClick = {dropdownMenuExpanded = true}),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
@@ -202,8 +193,8 @@ private fun ListCard(
             Row (
                 modifier = Modifier.fillMaxWidth()
             ) {
-              Text(text = item.name, style = MaterialTheme.typography.titleLarge)
-              Spacer(Modifier.weight(1f))
+                Text(text = item.name, style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.weight(1f))
                 val numberOfCheckedOut = products.count { it.checkedOut }
                 Text(
                     text = numberOfCheckedOut.toString() + " / " + products.size.toString(),
@@ -218,9 +209,42 @@ private fun ListCard(
                             top = dimensionResource(R.dimen.padding_small),
                             end = dimensionResource(R.dimen.padding_medium),
                             bottom = dimensionResource(R.dimen.padding_medium)
-                    ))
+                        ))
                 }
             }
+        }
+
+        val scope = rememberCoroutineScope()
+        var enabledEditing by remember {
+            mutableStateOf(false)
+        }
+        val itemManipulationViewModel: ItemManipulationViewModel = viewModel(factory = AppViewModelProvider.factory)
+
+        DropdownMenu(
+            expanded = dropdownMenuExpanded,
+            onDismissRequest = { dropdownMenuExpanded = false },
+        ) {
+            DropdownMenuItem(
+                text = { Text(stringResource(id = R.string.edit)) },
+                onClick = { itemManipulationViewModel.setCurrentItem(item)
+                    enabledEditing = true
+                dropdownMenuExpanded = false} )
+            DropdownMenuItem(
+                text = { Text(stringResource(id = R.string.delete))},
+                onClick = { scope.launch { itemManipulationViewModel.deleteItem(item)
+                dropdownMenuExpanded = false}} )
+        }
+        if (enabledEditing) {
+            ItemManipulationScreen(
+                itemUiState = itemManipulationViewModel.itemUiState,
+                onItemValueChange = itemManipulationViewModel::updateUiState,
+                onSaveClick = { scope.launch {
+                        itemManipulationViewModel.updateItem()
+                        enabledEditing = false
+                    } },
+                onDismissRequest = { enabledEditing = false },
+                isAddingNewItem = false
+            )
         }
     }
 }

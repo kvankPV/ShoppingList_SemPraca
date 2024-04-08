@@ -23,8 +23,9 @@ class HomeViewModel(private val itemsRepository: ItemsRepository) : ViewModel() 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
-    fun getProductsFromItem(itemName: String): Flow<List<Product>> {
-        return itemsRepository.getAllProductsFromItemStream(itemName)
+
+    fun getProductsFromItem(idItem: Int): Flow<List<Product>> {
+        return itemsRepository.getAllProductsFromItemStream(idItem)
     }
 }
 
