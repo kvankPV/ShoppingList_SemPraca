@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">ShopList</string>
+    <string name="archive">Archive</string>
+    <string name="trends">Trends</string>
     <string name="add_product">Add Product</string>
     <string name="category">Category</string>
     <string name="summary">Summary</string>

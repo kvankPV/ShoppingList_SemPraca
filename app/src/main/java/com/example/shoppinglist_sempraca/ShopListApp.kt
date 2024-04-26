@@ -1,7 +1,5 @@
 package com.example.shoppinglist_sempraca
 
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -14,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.shoppinglist_sempraca.ui.navigation.ListNavHost
+import com.example.shoppinglist_sempraca.ui.navigation.AppScaffold
 
 /**
  * Top level composable that represents screens for the application.
@@ -23,7 +21,7 @@ import com.example.shoppinglist_sempraca.ui.navigation.ListNavHost
 fun ShoppingListApp(
     navController: NavHostController = rememberNavController()
 ) {
-    ListNavHost(navController = navController)
+    AppScaffold(navController = navController)
 }
 
 /**
@@ -46,5 +44,4 @@ fun ShoppingListTopBar(
             scrollBehavior = scrollBehavior
         )
     }
-    Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.topBar_divider)))
 }

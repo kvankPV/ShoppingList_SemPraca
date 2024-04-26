@@ -38,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,6 +59,7 @@ import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
 import com.example.shoppinglist_sempraca.ui.navigation.NavigationDestination
 import com.example.shoppinglist_sempraca.ui.product.ProductManipulationScreen
 import com.example.shoppinglist_sempraca.ui.product.ProductManipulationViewModel
+import com.example.shoppinglist_sempraca.ui.product.toProduct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -86,13 +88,15 @@ fun HomeScreen (
 ) {
     val homeUiState by homeViewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showItemAddScreen by remember {
+    var showItemAddScreen by rememberSaveable {
         mutableStateOf(false)
     }
     val scope = rememberCoroutineScope()
 
     Scaffold(
-        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        modifier = modifier
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            .padding(bottom = dimensionResource(id = R.dimen.topBar_divider)),
         topBar = {
             ShoppingListTopBar(
                 title = stringResource(titleRes),
@@ -213,14 +217,14 @@ private fun ListCard(
 
 @Composable
 private fun rememberExpandedState(): Pair<Boolean, (Boolean) -> Unit> {
-    val (expanded, setExpanded) = remember { mutableStateOf(false) }
+    val (expanded, setExpanded) = rememberSaveable { mutableStateOf(false) }
     val onExpandedChange: (Boolean) -> Unit = { setExpanded(it) }
     return expanded to onExpandedChange
 }
 
 @Composable
 private fun rememberDropdownMenuExpandedState(): Pair<Boolean, (Boolean) -> Unit> {
-    val (dropdownMenuExpanded, setDropdownMenuExpanded) = remember { mutableStateOf(false) }
+    val (dropdownMenuExpanded, setDropdownMenuExpanded) = rememberSaveable { mutableStateOf(false) }
     val onDropdownMenuExpandedChange: (Boolean) -> Unit = { setDropdownMenuExpanded(it) }
     return dropdownMenuExpanded to onDropdownMenuExpandedChange
 }
@@ -261,7 +265,7 @@ private fun CardDropdownMenu(
 ) {
     val scope = rememberCoroutineScope()
     val itemManipulationViewModel: ItemManipulationViewModel = viewModel(factory = AppViewModelProvider.factory)
-    var enabledEditing by remember { mutableStateOf(false) }
+    var enabledEditing by rememberSaveable { mutableStateOf(false) }
 
     DropdownMenu(
         expanded = dropdownMenuExpanded,
@@ -308,7 +312,7 @@ private fun ExpandedCardContent(
     val scope = rememberCoroutineScope()
     val productManipulationViewModel: ProductManipulationViewModel =
         viewModel(factory = AppViewModelProvider.factory)
-    var addProduct by remember { mutableStateOf(false) }
+    var addProduct by rememberSaveable { mutableStateOf(false) }
 
     if (products.isNotEmpty()) {
         PrintAllProducts(
@@ -374,7 +378,7 @@ private fun PrintAllProducts(
 ) {
     val scope = rememberCoroutineScope()
     val productManipulationViewModel: ProductManipulationViewModel = viewModel(factory = AppViewModelProvider.factory)
-    var enabledEditing by remember { mutableStateOf(false) }
+    var enabledEditing by rememberSaveable { mutableStateOf(false) }
 
     val sortedProducts = products.sortedWith(compareBy({ !it.checkedOut }, { it.name }))
 
@@ -400,7 +404,7 @@ private fun PrintAllProducts(
             onProductValueChange = productManipulationViewModel::updateUiState,
             onSaveClick = {
                 scope.launch {
-                    productManipulationViewModel.updateProduct()
+                    productManipulationViewModel.updateProduct(product = productManipulationViewModel.productUiState.productDetails.toProduct())
                     enabledEditing = false
                 }
             },
@@ -429,8 +433,7 @@ private fun ProductRow(
             onClick = {
                 scope.launch {
                     val updatedProduct = product.copy(checkedOut = !product.checkedOut)
-                    productManipulationViewModel.setCurrentProduct(updatedProduct)
-                    productManipulationViewModel.updateProduct()
+                    productManipulationViewModel.updateProduct(updatedProduct)
                 }
             }
         )

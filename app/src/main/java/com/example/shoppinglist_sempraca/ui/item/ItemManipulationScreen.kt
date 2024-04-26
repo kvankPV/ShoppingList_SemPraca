@@ -36,7 +36,7 @@ fun ItemManipulationScreen(
         skipPartiallyExpanded = skipPartiallyExpanded
     )
 
-    var textFieldValue by remember { mutableStateOf(if (isAddingNewItem) "" else itemUiState.itemDetails.name) }
+    var textFieldValue by rememberSaveable { mutableStateOf(if (isAddingNewItem) "" else itemUiState.itemDetails.name) }
 
     if (openBottomSheet) {
         val windowInsets = if (edgeToEdgeEnabled)

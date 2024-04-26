@@ -93,7 +93,7 @@ private fun rememberTextFieldValue(
     isAddingNewProduct: Boolean,
     initialValue: String
 ): Triple<String, (String) -> Unit, () -> Unit> {
-    val (textFieldValue, setTextFieldValue) = remember {
+    val (textFieldValue, setTextFieldValue) = rememberSaveable {
         mutableStateOf(if (isAddingNewProduct) "" else initialValue)
     }
     val onTextFieldValueChange: (String) -> Unit = { setTextFieldValue(it) }
@@ -106,7 +106,7 @@ private fun rememberSelectedCategory(
     initialCategory: String,
     isAddingNewProduct: Boolean
 ): Triple<String, (String) -> Unit, () -> Unit> {
-    val (selectedCategory, setSelectedCategory) = remember {
+    val (selectedCategory, setSelectedCategory) = rememberSaveable {
         mutableStateOf(if (isAddingNewProduct) "" else initialCategory)
     }
     val onSelectedCategoryChange: (String) -> Unit = { setSelectedCategory(it) }
@@ -119,7 +119,7 @@ private fun rememberProductQuantity(
     initialQuantity: String,
     isAddingNewProduct: Boolean
 ): Triple<String, (String) -> Unit, () -> Unit> {
-    val (productQuantity, setProductQuantity) = remember {
+    val (productQuantity, setProductQuantity) = rememberSaveable {
         mutableStateOf(if (isAddingNewProduct) "" else initialQuantity)
     }
     val onProductQuantityChange: (String) -> Unit = { setProductQuantity(it) }

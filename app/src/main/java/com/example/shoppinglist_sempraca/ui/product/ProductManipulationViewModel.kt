@@ -24,9 +24,8 @@ class ProductManipulationViewModel(private val productsRepository: Repository) :
         }
     }
 
-    suspend fun updateProduct() {
-        if (validateInput()) {
-            val product = productUiState.productDetails.toProduct()
+    suspend fun updateProduct(product: Product) {
+        if (validateInput(product.toProductDetails())) {
             productsRepository.updateProduct(product)
             productsRepository.updateItemVisibilityBasedOnProducts(product.idItem)
         }
@@ -59,7 +58,7 @@ data class ProductDetails(
     val category: String = "",
     val quantity: String = "",
     val price: String = "",
-    val checkedOut: String = ""
+    val checkedOut: Boolean = false
 )
 
 fun ProductDetails.toProduct(): Product = Product (
@@ -69,7 +68,7 @@ fun ProductDetails.toProduct(): Product = Product (
     category = category,
     quantity = quantity.toIntOrNull() ?: 0,
     price = price.toDoubleOrNull() ?: 0.0,
-    checkedOut = checkedOut.toBooleanStrictOrNull() ?: false
+    checkedOut = checkedOut
 )
 
 fun Product.toProductUiState(isEntryValid: Boolean = false): ProductUiState = ProductUiState(
@@ -84,5 +83,5 @@ fun Product.toProductDetails(): ProductDetails = ProductDetails(
     category = category,
     quantity = quantity.toString(),
     price = price.toString(),
-    checkedOut = checkedOut.toString()
+    checkedOut = checkedOut
 )
