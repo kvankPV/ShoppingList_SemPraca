@@ -27,7 +27,7 @@ fun ItemManipulationScreen(
     onItemValueChange: (ItemDetails) -> Unit,
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
-    isAddingNewItem: Boolean
+    isAddingNewItem: Boolean,
 ) {
     var openBottomSheet by rememberSaveable { mutableStateOf(true) }
     val skipPartiallyExpanded by remember { mutableStateOf(false) }
@@ -64,7 +64,8 @@ fun ItemManipulationScreen(
                     openBottomSheet = false
                     onDismissRequest()
                 },
-                    enabled = !isAddingNewItem) {
+                    enabled = textFieldValue.isNotEmpty()
+                    ) {
                     Text(text = stringResource(id = R.string.submit))
                 }
             }

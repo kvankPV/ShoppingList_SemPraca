@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.shoppinglist_sempraca.ShopListApplication
 import com.example.shoppinglist_sempraca.ui.home.HomeViewModel
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
+import com.example.shoppinglist_sempraca.ui.product.ProductManipulationViewModel
 
 /**
  * Provides Factory to create instance of ViewModel for the entire app.
@@ -16,11 +17,15 @@ object AppViewModelProvider {
     val factory = viewModelFactory {
         // Ini for HomeViewModel
         initializer {
-            HomeViewModel(shopListApplication().container.itemsRepository)
+            HomeViewModel(shopListApplication().container.repository)
         }
-        //Ini for ManipulationViewModel
+        //Ini for ItemManipulationViewModel
         initializer {
-            ItemManipulationViewModel(shopListApplication().container.itemsRepository)
+            ItemManipulationViewModel(shopListApplication().container.repository)
+        }
+        //Ini for ProductManipulationViewModel
+        initializer {
+            ProductManipulationViewModel(shopListApplication().container.repository)
         }
     }
 }

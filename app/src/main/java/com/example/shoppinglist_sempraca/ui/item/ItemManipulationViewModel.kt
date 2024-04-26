@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.shoppinglist_sempraca.data.Item
-import com.example.shoppinglist_sempraca.data.ItemsRepository
+import com.example.shoppinglist_sempraca.data.Repository
 
 //Insert, update, delete items. with validation?
-class ItemManipulationViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
+class ItemManipulationViewModel(private val repository: Repository) : ViewModel() {
     /**
      * Holds current item ui state
      */
@@ -26,7 +26,7 @@ class ItemManipulationViewModel(private val itemsRepository: ItemsRepository) : 
 
     suspend fun insertItem() {
         if (validateInput()) {
-            itemsRepository.insertItem(itemUiState.itemDetails.toItem())
+            repository.insertItem(itemUiState.itemDetails.toItem())
         }
     }
 
@@ -39,12 +39,12 @@ class ItemManipulationViewModel(private val itemsRepository: ItemsRepository) : 
 
     suspend fun updateItem() {
         if (validateInput()) {
-            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+            repository.updateItem(itemUiState.itemDetails.toItem())
         }
     }
 
     suspend fun deleteItem(item: Item) {
-        itemsRepository.deleteItem(item)
+        repository.deleteItem(item)
     }
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
@@ -52,7 +52,6 @@ class ItemManipulationViewModel(private val itemsRepository: ItemsRepository) : 
             name.isNotBlank()
         }
     }
-    //TODO 2 different validations ?
 }
 /**
  * Represents Ui State for an Item.

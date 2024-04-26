@@ -1,12 +1,13 @@
 package com.example.shoppinglist_sempraca.data
 
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 
 /**
-[OfflineItemsRepository] is responsible for managing the data operations related to [Item] and [Product] entities.
+[OfflineRepository] is responsible for managing the data operations related to [Item] and [Product] entities.
 It uses the Data Access Objects (DAOs) [itemDao] and [productDao] to interact with the SQLite database.
  */
-class OfflineItemsRepository(private val itemDao:ItemDAO, private val productDao: ProductDAO): ItemsRepository {
+class OfflineRepository(private val itemDao:ItemDAO, private val productDao: ProductDAO): Repository {
     override suspend fun insertItem(item: Item) = itemDao.insertItem(item)
     override suspend fun deleteItem(item: Item) = itemDao.deleteItem(item)
     override suspend fun updateItem(item: Item) = itemDao.updateItem(item)
@@ -18,4 +19,15 @@ class OfflineItemsRepository(private val itemDao:ItemDAO, private val productDao
     override fun getProductStream(idProduct: Int, idItem: Int): Flow<Product> = productDao.getProduct(idProduct, idItem)
     override fun getAllProductsStream(): Flow<List<Product>> = productDao.getAllProducts()
     override fun getAllProductsFromItemStream(idItem: Int): Flow<List<Product>> = productDao.getAllProductsFromItem(idItem)
+
+    override suspend fun updateItemVisibilityBasedOnProducts(itemId: Int) {
+        val products = getAllProductsFromItemStream(itemId).first()
+        if (products.isNotEmpty() && products.all { it.checkedOut }) {
+            val item = getItemStream(itemId).first()
+            if (item != null) {
+                val updatedItem = item.copy(isVisible = false)
+                updateItem(updatedItem)
+            }
+        }
+    }
 }

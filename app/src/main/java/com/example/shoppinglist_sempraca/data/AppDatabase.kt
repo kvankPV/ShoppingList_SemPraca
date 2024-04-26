@@ -10,20 +10,20 @@ import androidx.room.RoomDatabase
  */
 //Version 1, in Item data class Item I had chosen the wrong PK.
 @Database(entities = [Item::class, Product::class], version = 2, exportSchema = false)
-abstract class ItemDatabase : RoomDatabase() {
+abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDAO(): ItemDAO
     abstract fun productDAO(): ProductDAO
 
     companion object {
         @Volatile
-        private var Instance: ItemDatabase? = null
+        private var Instance: AppDatabase? = null
 
-        fun getDatabase(context: Context): ItemDatabase {
+        fun getDatabase(context: Context): AppDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(
                     context,
-                    ItemDatabase::class.java,
+                    AppDatabase::class.java,
                     "item_database")
                     .fallbackToDestructiveMigration()
                     .build()

@@ -3,18 +3,18 @@ package com.example.shoppinglist_sempraca.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.shoppinglist_sempraca.data.Item
-import com.example.shoppinglist_sempraca.data.ItemsRepository
 import com.example.shoppinglist_sempraca.data.Product
+import com.example.shoppinglist_sempraca.data.Repository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class HomeViewModel(private val itemsRepository: ItemsRepository) : ViewModel() {
+class HomeViewModel(private val repository: Repository) : ViewModel() {
     //retrieve all items from database
     val homeUiState: StateFlow<HomeUiState> =
-        itemsRepository.getAllItemsStream().map { HomeUiState(it) }
+        repository.getAllItemsStream().map { HomeUiState(it) }
             .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
@@ -25,7 +25,7 @@ class HomeViewModel(private val itemsRepository: ItemsRepository) : ViewModel() 
     }
 
     fun getProductsFromItem(idItem: Int): Flow<List<Product>> {
-        return itemsRepository.getAllProductsFromItemStream(idItem)
+        return repository.getAllProductsFromItemStream(idItem)
     }
 }
 

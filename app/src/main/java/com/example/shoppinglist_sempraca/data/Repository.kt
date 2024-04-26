@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
  * Repository that provides insert, update, delete, and retrieve of [Item] and [Product]
  * from a given data source.
  */
-interface ItemsRepository {
+interface Repository {
     suspend fun insertItem(item: Item)
     suspend fun deleteItem(item: Item)
     suspend fun updateItem(item: Item)
@@ -18,4 +18,5 @@ interface ItemsRepository {
     fun getProductStream(idProduct: Int, idItem: Int): Flow<Product>
     fun getAllProductsStream(): Flow<List<Product>>
     fun getAllProductsFromItemStream(idItem: Int): Flow<List<Product>>
+    suspend fun updateItemVisibilityBasedOnProducts(itemId: Int)
 }

@@ -1,13 +1,17 @@
 package com.example.shoppinglist_sempraca
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.shoppinglist_sempraca.ui.navigation.ListNavHost
@@ -32,12 +36,15 @@ fun ShoppingListTopBar(
     title: String,
     scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
-    CenterAlignedTopAppBar(
-        title = { Text(title) },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        ),
-        modifier = modifier,
-        scrollBehavior = scrollBehavior,
-    )
+    Surface(shadowElevation = dimensionResource(id = R.dimen.padding_medium)) {
+        CenterAlignedTopAppBar(
+            title = { Text(title) },
+            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer
+            ),
+            modifier = modifier,
+            scrollBehavior = scrollBehavior
+        )
+    }
+    Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.topBar_divider)))
 }
