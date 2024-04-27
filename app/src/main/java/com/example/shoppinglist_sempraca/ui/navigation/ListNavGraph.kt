@@ -23,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.shoppinglist_sempraca.R
+import com.example.shoppinglist_sempraca.ui.archive.ArchiveScreen
 import com.example.shoppinglist_sempraca.ui.home.HomeScreen
 
 /**
@@ -77,6 +78,9 @@ fun ListNavHost(
             HomeScreen()
         }
         // Add other screens here
+        composable(route = Screen.Archive.route) {
+            ArchiveScreen()
+        }
     }
 }
 

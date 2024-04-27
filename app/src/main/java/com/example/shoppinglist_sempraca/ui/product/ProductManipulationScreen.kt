@@ -40,6 +40,7 @@ fun ProductManipulationScreen(
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
     isAddingNewProduct: Boolean,
+    isFromArchiveScreen: Boolean
 ) {
     val (openBottomSheet, resetOpenBottomSheet) = rememberOpenBottomSheetState()
     val (textFieldValue, onTextFieldValueChange, resetTextFieldValue) = rememberTextFieldValue(
@@ -65,6 +66,7 @@ fun ProductManipulationScreen(
             onProductQuantityChange = onProductQuantityChange,
             onProductValueChange = onProductValueChange,
             productUiState = productUiState,
+            isFromArchiveScreen = isFromArchiveScreen,
             onSaveClick = {
                 onSaveClick()
                 resetOpenBottomSheet()
@@ -138,6 +140,7 @@ private fun ProductBottomSheet(
     onProductQuantityChange: (String) -> Unit,
     onProductValueChange: (ProductDetails) -> Unit,
     productUiState: ProductUiState,
+    isFromArchiveScreen: Boolean,
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
 ) {
@@ -172,6 +175,15 @@ private fun ProductBottomSheet(
                 onProductValueChange = onProductValueChange,
                 productUiState = productUiState
             )
+
+            if (isFromArchiveScreen) {
+                ProductPriceField(
+                    productPrice = productUiState.productDetails.price,
+                    onProductPriceChange = { newPrice ->
+                        onProductValueChange(productUiState.productDetails.copy(price = newPrice))
+                    }
+                )
+            }
 
             SaveButton(
                 onSaveClick = onSaveClick,
@@ -301,6 +313,22 @@ private fun ProductQuantityField(
                 )
             }
         }
+    )
+}
+
+@Composable
+private fun ProductPriceField(
+    productPrice: String,
+    onProductPriceChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    OutlinedTextField(
+        value = productPrice,
+        onValueChange = onProductPriceChange,
+        singleLine = true,
+        label = { Text(stringResource(id = R.string.product_price_label)) },
+        modifier = modifier,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
     )
 }
 

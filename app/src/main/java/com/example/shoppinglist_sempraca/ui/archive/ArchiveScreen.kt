@@ -1,4 +1,4 @@
-package com.example.shoppinglist_sempraca.ui.home
+package com.example.shoppinglist_sempraca.ui.archive
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
@@ -24,7 +23,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -54,7 +52,8 @@ import com.example.shoppinglist_sempraca.ShoppingListTopBar
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
 import com.example.shoppinglist_sempraca.ui.AppViewModelProvider
-import com.example.shoppinglist_sempraca.ui.home.HomeDestination.titleRes
+import com.example.shoppinglist_sempraca.ui.archive.ArchiveDestination.titleRes
+import com.example.shoppinglist_sempraca.ui.home.HomeViewModel
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationScreen
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
 import com.example.shoppinglist_sempraca.ui.navigation.NavigationDestination
@@ -64,10 +63,12 @@ import com.example.shoppinglist_sempraca.ui.product.toProduct
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-object HomeDestination : NavigationDestination {
-    override val route = "home"
-    override val titleRes = R.string.app_name
+object ArchiveDestination : NavigationDestination {
+    override val route = "archive"
+    override val titleRes = R.string.archive
 }
+
+
 /*
 Important behavior for coroutineScopes:
 If the user rotates the screen very fast, the operation may get cancelled
@@ -81,14 +82,13 @@ be cancelled - since the scope is bound to composition.
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen (
+fun ArchiveScreen (
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.factory)
 ) {
     val homeUiState by homeViewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showItemAddScreen by rememberSaveable { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
+    rememberCoroutineScope()
 
     Scaffold(
         modifier = modifier
@@ -100,20 +100,8 @@ fun HomeScreen (
                 scrollBehavior = scrollBehavior
             )
         },
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {showItemAddScreen = true},
-                shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.add_item)
-                )
-            }
-        },
     ) { innerPadding ->
-        HomeBody(
+        ArchiveBody(
             itemList = homeUiState.itemList,
             modifier = modifier
                 .padding(innerPadding)
@@ -121,28 +109,18 @@ fun HomeScreen (
             homeViewModel = homeViewModel
         )
     }
-    if (showItemAddScreen) {
-        val itemManipulationViewModel: ItemManipulationViewModel = viewModel(factory = AppViewModelProvider.factory)
-        ItemManipulationScreen(
-            itemUiState = itemManipulationViewModel.itemUiState,
-            onItemValueChange = itemManipulationViewModel::updateUiState,
-            onSaveClick = { scope.launch { itemManipulationViewModel.insertItem() } } ,
-            onDismissRequest = { showItemAddScreen = false },
-            isAddingNewItem = true
-        )
-    }
 }
 
 @Composable
-private fun HomeBody(
+private fun ArchiveBody(
     itemList: List<Item>,
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel
 ) {
-    val visibleItems = remember(itemList) {
+    val hiddenItems = remember(itemList) {
         derivedStateOf {
             itemList.filter {
-                it.itemVisibility
+                !it.itemVisibility
             }
         }
     }
@@ -150,7 +128,7 @@ private fun HomeBody(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        if (visibleItems.value.isEmpty()) {
+        if (hiddenItems.value.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -162,7 +140,7 @@ private fun HomeBody(
                 )
             }
         } else {
-            ShopList(itemList = visibleItems.value,
+            ShopList(itemList = hiddenItems.value,
                 onItemClick = {item -> homeViewModel.getProductsFromItem(item.itemId)},
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
                 homeViewModel = homeViewModel
@@ -214,7 +192,7 @@ private fun ListCard(
             item = item
         )
         if (expanded) {
-            ExpandedCardContent(products, item)
+            ExpandedCardContent(products)
         }
     }
 }
@@ -234,7 +212,7 @@ private fun CardContent(
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = item.itemName, style = MaterialTheme.typography.titleLarge)
+            Text(text = item.itemName, style = MaterialTheme.typography.titleLarge.copy(color = Color.Gray))
             Spacer(Modifier.weight(1f))
             val numberOfCheckedOut = remember (products) {
                 derivedStateOf {
@@ -247,6 +225,15 @@ private fun CardContent(
             )
             ListItemButton(expanded = expanded, onClick = { onExpandedChange(!expanded) })
         }
+        val totalPrice = remember(products) {
+            derivedStateOf {
+                products.sumOf { it.productPrice }
+            }
+        }
+        Text(
+            text = "Total price: ${totalPrice.value}",
+            style = MaterialTheme.typography.titleMedium
+        )
     }
 }
 
@@ -304,14 +291,8 @@ private fun CardDropdownMenu(
 @Composable
 private fun ExpandedCardContent(
     products: List<Product>,
-    item: Item,
     modifier: Modifier = Modifier
 ) {
-    val scope = rememberCoroutineScope()
-    val productManipulationViewModel: ProductManipulationViewModel =
-        viewModel(factory = AppViewModelProvider.factory)
-    var addProduct by rememberSaveable { mutableStateOf(false) }
-
     if (products.isNotEmpty()) {
         PrintAllProducts(
             products = products,
@@ -323,37 +304,6 @@ private fun ExpandedCardContent(
 
             )
         )
-    }
-
-    AddProductCard(onClick = { addProduct = true })
-    if (addProduct) {
-        ProductManipulationScreen(
-            productUiState = productManipulationViewModel.productUiState,
-            onProductValueChange = productManipulationViewModel::updateUiState,
-            onSaveClick = { scope.launch { productManipulationViewModel.insertProduct(item.itemId) } },
-            onDismissRequest = { addProduct = false },
-            isAddingNewProduct = true,
-            isFromArchiveScreen = false
-        )
-    }
-}
-
-@Composable
-private fun AddProductCard(onClick: () -> Unit) {
-    Card(
-        modifier = Modifier
-            .padding(dimensionResource(id = R.dimen.padding_small))
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-    ) {
-        Row(
-            modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_medium))
-        ) {
-            Text(text = stringResource(id = R.string.add_product), style = MaterialTheme.typography.labelLarge)
-            Spacer(modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)))
-            Icon(imageVector = Icons.Default.Add,
-                contentDescription = stringResource(id = R.string.add_product))
-        }
     }
 }
 
@@ -401,20 +351,20 @@ private fun PrintAllProducts(
             )
         }
     }
-
     if (enabledEditing) {
         ProductManipulationScreen(
             productUiState = productManipulationViewModel.productUiState,
             onProductValueChange = productManipulationViewModel::updateUiState,
             onSaveClick = {
                 scope.launch {
-                    productManipulationViewModel.updateProduct(product = productManipulationViewModel.productUiState.productDetails.toProduct())
+                    productManipulationViewModel.updateProduct(product =
+                    productManipulationViewModel.productUiState.productDetails.toProduct())
                     enabledEditing = false
                 }
             },
             onDismissRequest = { enabledEditing = false },
             isAddingNewProduct = false,
-            isFromArchiveScreen = false
+            isFromArchiveScreen = true
         )
     }
 }
@@ -444,7 +394,10 @@ private fun ProductRow(
         )
         val textState = remember(product) {
             derivedStateOf {
-                "${product.productName} ${product.productCategory} ${product.productQuantity} ${if (product.productPrice > 0.0) product.productPrice.toString() else ""}"
+                "${product.productName} " +
+                        "${product.productCategory} " +
+                        "${product.productQuantity} ks \n" +
+                        "${if (product.productPrice > 0.0) product.productPrice.toString() + " $" else ""} "
             }
         }
         Text(
