@@ -1,4 +1,4 @@
-package com.example.shoppinglist_sempraca.ui.archive
+package com.example.shoppinglist_sempraca.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -51,8 +51,7 @@ import com.example.shoppinglist_sempraca.R
 import com.example.shoppinglist_sempraca.ShoppingListTopBar
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
-import com.example.shoppinglist_sempraca.ui.AppViewModelProvider
-import com.example.shoppinglist_sempraca.ui.archive.ArchiveDestination.titleRes
+import com.example.shoppinglist_sempraca.ui.ArchiveDestination.titleRes
 import com.example.shoppinglist_sempraca.ui.home.HomeViewModel
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationScreen
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
