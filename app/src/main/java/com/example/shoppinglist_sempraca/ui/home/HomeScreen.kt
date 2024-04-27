@@ -34,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,9 +89,7 @@ fun HomeScreen (
 ) {
     val homeUiState by homeViewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-    var showItemAddScreen by rememberSaveable {
-        mutableStateOf(false)
-    }
+    var showItemAddScreen by rememberSaveable { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
 
     Scaffold(
@@ -142,11 +141,18 @@ private fun HomeBody(
     modifier: Modifier = Modifier,
     homeViewModel: HomeViewModel
 ) {
+    val visibleItems = remember(itemList) {
+        derivedStateOf {
+            itemList.filter {
+                it.itemVisibility
+            }
+        }
+    }
     Column (
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
-        if (itemList.isEmpty() || itemList.all { !it.isVisible }) {
+        if (visibleItems.value.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
@@ -158,8 +164,8 @@ private fun HomeBody(
                 )
             }
         } else {
-            ShopList(itemList = itemList,
-                onItemClick = {item -> homeViewModel.getProductsFromItem(item.id)},
+            ShopList(itemList = visibleItems.value,
+                onItemClick = {item -> homeViewModel.getProductsFromItem(item.itemId)},
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
                 homeViewModel = homeViewModel
                 )
@@ -175,12 +181,12 @@ private fun ShopList(
     modifier: Modifier = Modifier
 ) {
     LazyColumn (modifier = modifier) {
-        items (items = itemList.filter{it.isVisible}, key = {it.id}) {
+        items (items = itemList, key = {it.itemId}) {
                 item -> ListCard (item = item,
                     modifier = Modifier
                         .padding(dimensionResource(id = R.dimen.padding_small))
                         .clickable { onItemClick(item) },
-                    products = homeViewModel.getProductsFromItem(item.id).collectAsState(initial= emptyList()).value
+                    products = homeViewModel.getProductsFromItem(item.itemId).collectAsState(initial= emptyList()).value
                 )
         }
     }
@@ -193,8 +199,8 @@ private fun ListCard(
     products: List<Product>,
     modifier: Modifier = Modifier
 ) {
-    val (expanded, onExpandedChange) = rememberExpandedState()
-    val (dropdownMenuExpanded, onDropdownMenuExpandedChange) = rememberDropdownMenuExpandedState()
+    val (expanded, onExpandedChange) = rememberSaveable { mutableStateOf(false)}
+    val (dropdownMenuExpanded, onDropdownMenuExpandedChange) = rememberSaveable { mutableStateOf(false)}
 
     Card(
         modifier = modifier.combinedClickable(
@@ -216,20 +222,6 @@ private fun ListCard(
 }
 
 @Composable
-private fun rememberExpandedState(): Pair<Boolean, (Boolean) -> Unit> {
-    val (expanded, setExpanded) = rememberSaveable { mutableStateOf(false) }
-    val onExpandedChange: (Boolean) -> Unit = { setExpanded(it) }
-    return expanded to onExpandedChange
-}
-
-@Composable
-private fun rememberDropdownMenuExpandedState(): Pair<Boolean, (Boolean) -> Unit> {
-    val (dropdownMenuExpanded, setDropdownMenuExpanded) = rememberSaveable { mutableStateOf(false) }
-    val onDropdownMenuExpandedChange: (Boolean) -> Unit = { setDropdownMenuExpanded(it) }
-    return dropdownMenuExpanded to onDropdownMenuExpandedChange
-}
-
-@Composable
 private fun CardContent(
     item: Item,
     products: List<Product>,
@@ -244,11 +236,15 @@ private fun CardContent(
         Row(
             modifier = Modifier.fillMaxWidth()
         ) {
-            Text(text = item.name, style = MaterialTheme.typography.titleLarge)
+            Text(text = item.itemName, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.weight(1f))
-            val numberOfCheckedOut = products.count { it.checkedOut }
+            val numberOfCheckedOut = remember (products) {
+                derivedStateOf {
+                    products.count {it.productCheckedOut}
+                }
+            }
             Text(
-                text = "$numberOfCheckedOut / ${products.size}",
+                text = "${numberOfCheckedOut.value} / ${products.size}",
                 style = MaterialTheme.typography.titleMedium
             )
             ListItemButton(expanded = expanded, onClick = { onExpandedChange(!expanded) })
@@ -332,7 +328,7 @@ private fun ExpandedCardContent(
         ProductManipulationScreen(
             productUiState = productManipulationViewModel.productUiState,
             onProductValueChange = productManipulationViewModel::updateUiState,
-            onSaveClick = { scope.launch { productManipulationViewModel.insertProduct(item.id) } },
+            onSaveClick = { scope.launch { productManipulationViewModel.insertProduct(item.itemId) } },
             onDismissRequest = { addProduct = false },
             isAddingNewProduct = true
         )
@@ -380,10 +376,14 @@ private fun PrintAllProducts(
     val productManipulationViewModel: ProductManipulationViewModel = viewModel(factory = AppViewModelProvider.factory)
     var enabledEditing by rememberSaveable { mutableStateOf(false) }
 
-    val sortedProducts = products.sortedWith(compareBy({ !it.checkedOut }, { it.name }))
+    val sortedProducts = remember(products) {
+        derivedStateOf {
+            products.sortedWith(compareBy({ !it.productCheckedOut }, { it.productName }))
+        }
+    }
 
     Column(modifier = modifier) {
-        sortedProducts.forEach { product ->
+        sortedProducts.value.forEach { product ->
             ProductRow(
                 product = product,
                 productManipulationViewModel = productManipulationViewModel,
@@ -429,18 +429,23 @@ private fun ProductRow(
         modifier = Modifier.fillMaxWidth()
     ) {
         RadioButton(
-            selected = product.checkedOut,
+            selected = product.productCheckedOut,
             onClick = {
                 scope.launch {
-                    val updatedProduct = product.copy(checkedOut = !product.checkedOut)
+                    val updatedProduct = product.copy(productCheckedOut = !product.productCheckedOut)
                     productManipulationViewModel.updateProduct(updatedProduct)
                 }
             }
         )
+        val textState = remember(product) {
+            derivedStateOf {
+                "${product.productName} ${product.productCategory} ${product.productQuantity} ${if (product.productPrice > 0.0) product.productPrice.toString() else ""}"
+            }
+        }
         Text(
-            text = "${product.name} ${product.category} ${product.quantity} ${if (product.price > 0.0) product.price.toString() else ""}",
+            text = textState.value,
             style = MaterialTheme.typography.labelLarge,
-            color = if (product.checkedOut) Color.Gray else MaterialTheme.colorScheme.onBackground,
+            color = if (product.productCheckedOut) Color.Gray else MaterialTheme.colorScheme.onBackground,
             modifier = Modifier.weight(1f)
         )
 

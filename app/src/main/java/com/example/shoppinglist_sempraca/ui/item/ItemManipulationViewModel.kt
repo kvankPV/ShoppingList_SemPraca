@@ -1,3 +1,5 @@
+@file:Suppress("EmptyMethod", "EmptyMethod")
+
 package com.example.shoppinglist_sempraca.ui.item
 
 import androidx.compose.runtime.getValue
@@ -26,7 +28,7 @@ class ItemManipulationViewModel(private val repository: Repository) : ViewModel(
 
     suspend fun insertItem() {
         if (validateInput()) {
-            repository.insertItem(itemUiState.itemDetails.toItem())
+            repository.insert(itemUiState.itemDetails.toItem())
         }
     }
 
@@ -39,12 +41,12 @@ class ItemManipulationViewModel(private val repository: Repository) : ViewModel(
 
     suspend fun updateItem() {
         if (validateInput()) {
-            repository.updateItem(itemUiState.itemDetails.toItem())
+            repository.update(itemUiState.itemDetails.toItem())
         }
     }
 
     suspend fun deleteItem(item: Item) {
-        repository.deleteItem(item)
+        repository.delete(item)
     }
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {
@@ -72,10 +74,10 @@ data class ItemDetails(
  * Extension function to convert [ItemUiState] to [Item].
  */
 fun ItemDetails.toItem(): Item = Item (
-    id = id,
-    name = name,
-    isVisible = isVisible.toBooleanStrictOrNull() ?: true,
-    totalPrice = totalPrice.toDoubleOrNull() ?: 0.0
+    itemId = id,
+    itemName = name,
+    itemVisibility = isVisible.toBooleanStrictOrNull() ?: true,
+    itemTotalPrice = totalPrice.toDoubleOrNull() ?: 0.0
 )
 
 /**
@@ -90,8 +92,8 @@ fun Item.toItemUiState(isEntryValid: Boolean = false): ItemUiState = ItemUiState
  * Extension function to convert [Item] to [ItemDetails].
  */
 fun Item.toItemDetails(): ItemDetails = ItemDetails(
-    id = id,
-    name = name,
-    totalPrice = totalPrice.toString(),
-    isVisible = isVisible.toString()
+    id = itemId,
+    name = itemName,
+    totalPrice = itemTotalPrice.toString(),
+    isVisible = itemVisibility.toString()
 )

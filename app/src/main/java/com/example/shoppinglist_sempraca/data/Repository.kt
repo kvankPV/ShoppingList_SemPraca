@@ -7,14 +7,11 @@ import kotlinx.coroutines.flow.Flow
  * from a given data source.
  */
 interface Repository {
-    suspend fun insertItem(item: Item)
-    suspend fun deleteItem(item: Item)
-    suspend fun updateItem(item: Item)
+    suspend fun <T> insert(entity: T)
+    suspend fun <T> delete(entity: T)
+    suspend fun <T> update(entity: T)
     fun getItemStream(idItem: Int) : Flow<Item?>
     fun getAllItemsStream(): Flow<List<Item>>
-    suspend fun insertProduct(product: Product)
-    suspend fun updateProduct(product: Product)
-    suspend fun deleteProduct(product: Product)
     fun getProductStream(idProduct: Int, idItem: Int): Flow<Product>
     fun getAllProductsStream(): Flow<List<Product>>
     fun getAllProductsFromItemStream(idItem: Int): Flow<List<Product>>

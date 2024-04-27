@@ -9,8 +9,8 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "items")
 data class Item (
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    val name: String,
-    val isVisible: Boolean = true,
-    val totalPrice: Double
+    val itemId: Int,
+    val itemName: String,
+    val itemVisibility: Boolean = true,
+    val itemTotalPrice: Double
 )

@@ -19,15 +19,15 @@ class ProductManipulationViewModel(private val productsRepository: Repository) :
     suspend fun insertProduct(itemId: Int) {
         if (validateInput()) {
             val product = productUiState.productDetails.copy(idItem = itemId).toProduct()
-            productsRepository.insertProduct(product)
+            productsRepository.insert(product)
             productsRepository.updateItemVisibilityBasedOnProducts(itemId)
         }
     }
 
     suspend fun updateProduct(product: Product) {
         if (validateInput(product.toProductDetails())) {
-            productsRepository.updateProduct(product)
-            productsRepository.updateItemVisibilityBasedOnProducts(product.idItem)
+            productsRepository.update(product)
+            productsRepository.updateItemVisibilityBasedOnProducts(product.itemId)
         }
     }
 
@@ -36,8 +36,8 @@ class ProductManipulationViewModel(private val productsRepository: Repository) :
     }
 
     suspend fun deleteProduct(product: Product) {
-        productsRepository.deleteProduct(product)
-        productsRepository.updateItemVisibilityBasedOnProducts(product.idItem)
+        productsRepository.delete(product)
+        productsRepository.updateItemVisibilityBasedOnProducts(product.itemId)
     }
 
     private fun validateInput(uiState: ProductDetails = productUiState.productDetails): Boolean {
@@ -62,13 +62,13 @@ data class ProductDetails(
 )
 
 fun ProductDetails.toProduct(): Product = Product (
-    idProduct = idProduct,
-    idItem = idItem,
-    name = name,
-    category = category,
-    quantity = quantity.toIntOrNull() ?: 0,
-    price = price.toDoubleOrNull() ?: 0.0,
-    checkedOut = checkedOut
+    productId = idProduct,
+    itemId = idItem,
+    productName = name,
+    productCategory = category,
+    productQuantity = quantity.toIntOrNull() ?: 0,
+    productPrice = price.toDoubleOrNull() ?: 0.0,
+    productCheckedOut = checkedOut
 )
 
 fun Product.toProductUiState(isEntryValid: Boolean = false): ProductUiState = ProductUiState(
@@ -77,11 +77,11 @@ fun Product.toProductUiState(isEntryValid: Boolean = false): ProductUiState = Pr
 )
 
 fun Product.toProductDetails(): ProductDetails = ProductDetails(
-    idProduct = idProduct,
-    idItem = idItem,
-    name = name,
-    category = category,
-    quantity = quantity.toString(),
-    price = price.toString(),
-    checkedOut = checkedOut
+    idProduct = productId,
+    idItem = itemId,
+    name = productName,
+    category = productCategory,
+    quantity = productQuantity.toString(),
+    price = productPrice.toString(),
+    checkedOut = productCheckedOut
 )

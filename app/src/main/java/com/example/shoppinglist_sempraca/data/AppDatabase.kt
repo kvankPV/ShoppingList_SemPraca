@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
  * Database class with a singleton Instance object.
  */
 //Version 1, in Item data class Item I had chosen the wrong PK.
-@Database(entities = [Item::class, Product::class], version = 2, exportSchema = false)
+@Database(entities = [Item::class, Product::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun itemDAO(): ItemDAO
     abstract fun productDAO(): ProductDAO

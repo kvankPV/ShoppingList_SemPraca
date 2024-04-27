@@ -19,12 +19,12 @@ interface ProductDAO {
     @Delete
     suspend fun deleteProduct(product: Product)
 
-    @Query("SELECT * from products WHERE idProduct = :idProduct and idItem = :idItem")
-    fun getProduct(idProduct: Int, idItem: Int): Flow<Product>
+    @Query("SELECT * from products WHERE productId = :productId and itemId = :itemId")
+    fun getProduct(productId: Int, itemId: Int): Flow<Product>
 
     @Query("SELECT * from products")
     fun getAllProducts(): Flow<List<Product>>
 
-    @Query("SELECT * from products WHERE idItem = :idItem")
-    fun getAllProductsFromItem(idItem: Int): Flow<List<Product>>
+    @Query("SELECT * from products WHERE itemId = :itemId")
+    fun getAllProductsFromItem(itemId: Int): Flow<List<Product>>
 }
