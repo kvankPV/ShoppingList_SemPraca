@@ -29,4 +29,7 @@ interface ItemDAO {
 
     @Query("SELECT * from items")
     fun getAllItems(): Flow<List<Item>>
+
+    @Query("SELECT itemTotalPrice from items where itemVisibility = 0")
+    fun getAllPricesFromNonVisible(): Flow<List<Double>>
 }

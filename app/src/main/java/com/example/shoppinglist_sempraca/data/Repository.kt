@@ -12,8 +12,7 @@ interface Repository {
     suspend fun <T> update(entity: T)
     fun getItemStream(idItem: Int) : Flow<Item?>
     fun getAllItemsStream(): Flow<List<Item>>
-    fun getProductStream(idProduct: Int, idItem: Int): Flow<Product>
-    fun getAllProductsStream(): Flow<List<Product>>
     fun getAllProductsFromItemStream(idItem: Int): Flow<List<Product>>
+    fun getAllPricesFromNonVisibleItems(): Flow<List<Double>>
     suspend fun updateItemVisibilityBasedOnProducts(itemId: Int)
 }

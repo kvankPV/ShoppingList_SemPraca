@@ -4,11 +4,8 @@
     <string name="trends">Trends</string>
     <string name="add_product">Add Product</string>
     <string name="category">Category</string>
-    <string name="summary">Summary</string>
     <string name="habits">Habits</string>
-    <string name="back_button">Back</string>
     <string name="add_item">Add List</string>
-    <string name="expand">Expand</string>
     <string name="expand_button_content_desc">Expand Button</string>
     <string name="no_items_in_list">Empty List. Click + to add one</string>
     <string name="submit">Submit</string>

@@ -87,7 +87,7 @@ fun ProductManipulationScreen(
 private fun rememberOpenBottomSheetState(): Pair<Boolean, () -> Unit> {
     val (openBottomSheet, setOpenBottomSheet) = rememberSaveable { mutableStateOf(true) }
     val resetOpenBottomSheet: () -> Unit = { setOpenBottomSheet(false) }
-    return Pair(openBottomSheet, resetOpenBottomSheet)
+    return openBottomSheet to resetOpenBottomSheet
 }
 
 @Composable

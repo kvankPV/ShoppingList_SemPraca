@@ -31,6 +31,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -204,6 +205,8 @@ private fun CardContent(
     onExpandedChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val scope = rememberCoroutineScope()
+    val itemManipulationViewModel: ItemManipulationViewModel = viewModel(factory = AppViewModelProvider.factory)
     Column(
         modifier = modifier.padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
@@ -229,6 +232,13 @@ private fun CardContent(
                 products.sumOf { it.productPrice }
             }
         }
+
+        LaunchedEffect(key1 = totalPrice.value) {
+            scope.launch {
+                itemManipulationViewModel.updateItemTotalPrice(item.itemId, totalPrice.value)
+            }
+        }
+
         Text(
             text = "Total price: ${totalPrice.value}",
             style = MaterialTheme.typography.titleMedium

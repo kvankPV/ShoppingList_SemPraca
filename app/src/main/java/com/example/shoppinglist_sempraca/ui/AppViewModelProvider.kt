@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.shoppinglist_sempraca.ShopListApplication
+import com.example.shoppinglist_sempraca.ui.chart.ChartViewModel
 import com.example.shoppinglist_sempraca.ui.home.HomeViewModel
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
 import com.example.shoppinglist_sempraca.ui.product.ProductManipulationViewModel
@@ -26,6 +27,9 @@ object AppViewModelProvider {
         //Ini for ProductManipulationViewModel
         initializer {
             ProductManipulationViewModel(shopListApplication().container.repository)
+        }
+        initializer {
+            ChartViewModel(shopListApplication().container.repository)
         }
     }
 }

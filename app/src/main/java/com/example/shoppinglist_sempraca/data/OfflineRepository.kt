@@ -30,9 +30,8 @@ class OfflineRepository(private val itemDao:ItemDAO, private val productDao: Pro
     }
     override fun getItemStream(idItem: Int): Flow<Item?> = itemDao.getItem(idItem)
     override fun getAllItemsStream(): Flow<List<Item>> = itemDao.getAllItems()
-    override fun getProductStream(idProduct: Int, idItem: Int): Flow<Product> = productDao.getProduct(idProduct, idItem)
-    override fun getAllProductsStream(): Flow<List<Product>> = productDao.getAllProducts()
     override fun getAllProductsFromItemStream(idItem: Int): Flow<List<Product>> = productDao.getAllProductsFromItem(idItem)
+    override fun getAllPricesFromNonVisibleItems(): Flow<List<Double>> = itemDao.getAllPricesFromNonVisible()
 
     override suspend fun updateItemVisibilityBasedOnProducts(itemId: Int) {
         val products = getAllProductsFromItemStream(itemId).first()

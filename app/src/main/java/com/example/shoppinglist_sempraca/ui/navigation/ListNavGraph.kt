@@ -5,9 +5,9 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MailOutline
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Info
+import androidx.compose.material.icons.rounded.MailOutline
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +24,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.shoppinglist_sempraca.R
 import com.example.shoppinglist_sempraca.ui.ArchiveScreen
+import com.example.shoppinglist_sempraca.ui.chart.ChartScreen
 import com.example.shoppinglist_sempraca.ui.home.HomeScreen
 
 /**
@@ -77,15 +78,17 @@ fun ListNavHost(
         composable(route = Screen.List.route) {
             HomeScreen()
         }
-        // Add other screens here
         composable(route = Screen.Archive.route) {
             ArchiveScreen()
+        }
+        composable(route = Screen.Trends.route) {
+            ChartScreen()
         }
     }
 }
 
 enum class Screen(val route: String, val icon: ImageVector, @StringRes val title: Int) {
-    List("list", Icons.Filled.Home, R.string.app_name),
-    Archive("archive", Icons.Filled.MailOutline, R.string.archive),
-    Trends("trends", Icons.Filled.Info, R.string.trends)
+    List("list", Icons.Rounded.Home, R.string.app_name),
+    Archive("archive", Icons.Rounded.MailOutline, R.string.archive),
+    Trends("trends", Icons.Rounded.Info, R.string.trends)
 }
