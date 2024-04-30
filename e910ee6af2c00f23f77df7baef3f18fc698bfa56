@@ -1,0 +1,65 @@
+[33mcommit e910ee6af2c00f23f77df7baef3f18fc698bfa56[m[33m ([m[1;36mHEAD -> [m[1;32mdev[m[33m, [m[1;31morigin/dev[m[33m)[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Fri Apr 26 18:59:28 2024 +0200
+
+    fixes.
+
+[33mcommit 36473b57c442b7c429aa083e2c753489fcfdf514[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Fri Apr 26 11:43:33 2024 +0200
+
+    pridal som produkty, ktoré sú súčasťou Item. toto je viac menej backup, pretože chcem nejako spojiť ItemViewModel a ProductViewModel do jedného z dôvodu podobností. pár tweakov, treba vyriešiť otáčanie obrazovky(BottomSheetMenu),
+
+[33mcommit 2a878dcccac0dfbf3d675722cbb841e61cf2e948[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Fri Apr 26 11:43:02 2024 +0200
+
+    pridal som produkty, ktoré sú súčasťou Item. toto je viac menej backup, pretože chcem nejako spojiť ItemViewModel a ProductViewModel do jedného z dôvodu podobností. pár tweakov, treba vyriešiť otáčanie obrazovky(BottomSheetMenu),
+
+[33mcommit 06ca2093ec9ec1ea0647c8e434a7e26d3cee2f76[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Mon Apr 8 16:54:03 2024 +0200
+
+    Backend je opravený (zmeniť PK pre Item) a je funkčný. Je pridaná funkcia pre mazanie a upravovanie Itemu.
+
+[33mcommit 5c9e05ab3b8f8477beca21f33e3142267ac24994[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Thu Apr 4 14:14:12 2024 +0200
+
+    fixed Backend, at this point only functionality of the app is adding Items.
+
+[33mcommit 1efbb9b8fbd38c1f8d49516d6de73d347bf17bab[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Mon Apr 1 17:09:01 2024 +0200
+
+    Pridaný backend + začiatky Domovskej obrazovky.
+
+[33mcommit 0a62573267585b3a57eb391940469dd31ba645a6[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Mon Apr 1 10:59:44 2024 +0200
+
+    SQL.
+
+[33mcommit 62da71bc6d18d575b5898063417467024a0b86ed[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Sun Mar 31 22:02:35 2024 +0200
+
+    zaciatky.
+
+[33mcommit 7ed624335ecc3ee08b8d350e6e212f5492310379[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Sun Mar 31 22:02:21 2024 +0200
+
+    zaciatky.
+
+[33mcommit 4d3700b9bd438598612a6bea4768a6c5a2686d87[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Sun Mar 31 13:16:02 2024 +0200
+
+    prvy commit
+
+[33mcommit bec0feee7add4136d68a62d12151a24024cc3d1f[m
+Author: Quang <quang.pviet17@gmail.com>
+Date:   Sun Mar 31 13:13:32 2024 +0200
+
+    prvy commit

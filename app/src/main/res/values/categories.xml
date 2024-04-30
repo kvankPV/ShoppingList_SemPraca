@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="categories">
+        <item>Fruits</item>
+        <item>Drinks</item>
+        <item>Vegetables</item>
+        <item>Meat</item>
+        <item>Dairy</item>
+        <item>Bakery</item>
+        <item>Snacks</item>
+        <item>Grains</item>
+        <item>Condiments</item>
+        <item>Frozen</item>
+        <item>Canned</item>
+        <item>Personal Care</item>
+        <item>Household Items</item>
+        <item>Others</item>
+    </string-array>
+</resources>

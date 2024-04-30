@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">shoppingList_SemPraca</string>
+    <string name="app_name">ShopList</string>
+    <string name="archive">Archive</string>
+    <string name="trends">Trends</string>
+    <string name="add_product">Add Product</string>
+    <string name="category">Category</string>
+    <string name="habits">Habits</string>
+    <string name="add_item">Add List</string>
+    <string name="expand_button_content_desc">Expand Button</string>
+    <string name="no_items_in_list">Empty List. Click + to add one</string>
+    <string name="submit">Submit</string>
+    <string name="entry_name">Enter Name:</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="more_options">More Options:</string>
+    <string name="product_quantity_label">"Amount: "</string>
+    <string name="increment_quantity">plus sign</string>
+    <string name="decrement_quantity">minus sign</string>
+    <string name="product_price_label">Product price:\n</string>
 </resources>
