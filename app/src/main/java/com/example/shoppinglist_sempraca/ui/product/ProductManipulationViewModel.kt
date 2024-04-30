@@ -3,11 +3,11 @@ package com.example.shoppinglist_sempraca.ui.product
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import com.example.shoppinglist_sempraca.data.Product
 import com.example.shoppinglist_sempraca.data.Repository
+import com.example.shoppinglist_sempraca.ui.BaseViewModel
 
-class ProductManipulationViewModel(private val productsRepository: Repository) : ViewModel() {
+class ProductManipulationViewModel(private val productsRepository: Repository) : BaseViewModel() {
     var productUiState by mutableStateOf(ProductUiState())
         private set
 

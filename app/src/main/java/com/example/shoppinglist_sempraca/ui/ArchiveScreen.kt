@@ -292,7 +292,8 @@ private fun CardDropdownMenu(
                 }
             },
             onDismissRequest = { enabledEditing = false },
-            isAddingNewItem = false
+            isAddingNewItem = false,
+            viewModel = itemManipulationViewModel
         )
     }
 }
@@ -373,7 +374,8 @@ private fun PrintAllProducts(
             },
             onDismissRequest = { enabledEditing = false },
             isAddingNewProduct = false,
-            isFromArchiveScreen = true
+            isFromArchiveScreen = true,
+            viewModel = productManipulationViewModel
         )
     }
 }

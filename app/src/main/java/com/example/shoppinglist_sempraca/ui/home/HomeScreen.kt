@@ -126,9 +126,10 @@ fun HomeScreen (
         ItemManipulationScreen(
             itemUiState = itemManipulationViewModel.itemUiState,
             onItemValueChange = itemManipulationViewModel::updateUiState,
-            onSaveClick = { scope.launch { itemManipulationViewModel.insertItem() } } ,
+            onSaveClick = { scope.launch { itemManipulationViewModel.insertItem() } },
             onDismissRequest = { showItemAddScreen = false },
-            isAddingNewItem = true
+            isAddingNewItem = true,
+            viewModel = itemManipulationViewModel
         )
     }
 }
@@ -287,6 +288,7 @@ private fun CardDropdownMenu(
 
     if (enabledEditing) {
         ItemManipulationScreen(
+            viewModel = itemManipulationViewModel,
             itemUiState = itemManipulationViewModel.itemUiState,
             onItemValueChange = itemManipulationViewModel::updateUiState,
             onSaveClick = {
@@ -333,7 +335,8 @@ private fun ExpandedCardContent(
             onSaveClick = { scope.launch { productManipulationViewModel.insertProduct(item.itemId) } },
             onDismissRequest = { addProduct = false },
             isAddingNewProduct = true,
-            isFromArchiveScreen = false
+            isFromArchiveScreen = false,
+            viewModel = productManipulationViewModel
         )
     }
 }
@@ -414,7 +417,8 @@ private fun PrintAllProducts(
             },
             onDismissRequest = { enabledEditing = false },
             isAddingNewProduct = false,
-            isFromArchiveScreen = false
+            isFromArchiveScreen = false,
+            viewModel = productManipulationViewModel
         )
     }
 }

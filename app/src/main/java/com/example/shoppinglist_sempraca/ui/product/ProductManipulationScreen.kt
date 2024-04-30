@@ -1,5 +1,11 @@
 package com.example.shoppinglist_sempraca.ui.product
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -7,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -22,6 +29,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +48,8 @@ fun ProductManipulationScreen(
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
     isAddingNewProduct: Boolean,
-    isFromArchiveScreen: Boolean
+    isFromArchiveScreen: Boolean,
+    viewModel: ProductManipulationViewModel
 ) {
     val (openBottomSheet, resetOpenBottomSheet) = rememberOpenBottomSheetState()
     val (textFieldValue, onTextFieldValueChange, resetTextFieldValue) = rememberTextFieldValue(
@@ -58,6 +67,7 @@ fun ProductManipulationScreen(
 
     if (openBottomSheet) {
         ProductBottomSheet(
+            viewModel = viewModel,
             textFieldValue = textFieldValue,
             onTextFieldValueChange = onTextFieldValueChange,
             selectedCategory = selectedCategory,
@@ -132,6 +142,7 @@ private fun rememberProductQuantity(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ProductBottomSheet(
+    viewModel: ProductManipulationViewModel,
     textFieldValue: String,
     onTextFieldValueChange: (String) -> Unit,
     selectedCategory: String,
@@ -154,12 +165,19 @@ private fun ProductBottomSheet(
         sheetState = bottomSheetState,
         windowInsets = windowInsets
     ) {
+        val voiceInputLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                viewModel.handleVoiceInputResult(result.data)
+            }
+        }
         Column {
             ProductNameTextField(
                 textFieldValue = textFieldValue,
                 onTextFieldValueChange = onTextFieldValueChange,
                 onProductValueChange = onProductValueChange,
-                productUiState = productUiState
+                productUiState = productUiState,
+                voiceInputLauncher = voiceInputLauncher,
+                viewModel = viewModel
             )
 
             ProductCategoryDropdown(
@@ -202,8 +220,17 @@ private fun ProductNameTextField(
     onTextFieldValueChange: (String) -> Unit,
     onProductValueChange: (ProductDetails) -> Unit,
     productUiState: ProductUiState,
-    modifier: Modifier = Modifier
+    voiceInputLauncher: ActivityResultLauncher<Intent>,
+    modifier: Modifier = Modifier,
+    viewModel: ProductManipulationViewModel
 ) {
+    val voiceInput by viewModel.voiceInput.collectAsState()
+
+    if (voiceInput != textFieldValue) {
+        onTextFieldValueChange(voiceInput)
+        onProductValueChange(productUiState.productDetails.copy(name = voiceInput))
+    }
+
     OutlinedTextField(
         modifier = modifier.fillMaxWidth(),
         value = textFieldValue,
@@ -212,7 +239,18 @@ private fun ProductNameTextField(
             onProductValueChange(productUiState.productDetails.copy(name = it))
         },
         singleLine = true,
-        label = { Text(text = stringResource(id = R.string.entry_name)) }
+        label = { Text(text = stringResource(id = R.string.entry_name)) },
+        trailingIcon = {
+            IconButton(onClick = {
+                val voiceInputIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                    putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                    putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now")
+                }
+                voiceInputLauncher.launch(voiceInputIntent)
+            }) {
+                Icon(Icons.Filled.Call, contentDescription = "Voice Input")
+            }
+        }
     )
 }
 

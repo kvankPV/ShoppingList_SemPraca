@@ -5,13 +5,13 @@ package com.example.shoppinglist_sempraca.ui.item
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Repository
+import com.example.shoppinglist_sempraca.ui.BaseViewModel
 import kotlinx.coroutines.flow.first
 
 //Insert, update, delete items. with validation?
-class ItemManipulationViewModel(private val repository: Repository) : ViewModel() {
+class ItemManipulationViewModel(private val repository: Repository) : BaseViewModel() {
     /**
      * Holds current item ui state
      */

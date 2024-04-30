@@ -1,16 +1,26 @@
 package com.example.shoppinglist_sempraca.ui.item
 
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -30,6 +40,7 @@ fun ItemManipulationScreen(
     onSaveClick: () -> Unit,
     onDismissRequest: () -> Unit,
     isAddingNewItem: Boolean,
+    viewModel: ItemManipulationViewModel,
 ) {
     val coroutineScope = rememberCoroutineScope()
     var openBottomSheet by rememberSaveable { mutableStateOf(true) }
@@ -41,6 +52,13 @@ fun ItemManipulationScreen(
 
     var textFieldValue by rememberSaveable { mutableStateOf(if (isAddingNewItem) "" else itemUiState.itemDetails.name) }
 
+    val voiceInput by viewModel.voiceInput.collectAsState()
+
+    if (voiceInput != textFieldValue) {
+        textFieldValue = voiceInput
+        onItemValueChange(itemUiState.itemDetails.copy(name = voiceInput))
+    }
+
     if (openBottomSheet) {
         val windowInsets = if (edgeToEdgeEnabled)
             WindowInsets(0) else BottomSheetDefaults.windowInsets
@@ -49,11 +67,16 @@ fun ItemManipulationScreen(
             onDismissRequest = { coroutineScope.launch {
                 bottomSheetState.hide()
             }
-                               openBottomSheet = false
-                               onDismissRequest()},
+                openBottomSheet = false
+                onDismissRequest()},
             sheetState = bottomSheetState,
             windowInsets = windowInsets
         ) {
+            val voiceInputLauncher = rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    viewModel.handleVoiceInputResult(result.data)
+                }
+            }
             Column {
                 OutlinedTextField(modifier = Modifier.fillMaxWidth(),
                     value = textFieldValue,
@@ -63,7 +86,17 @@ fun ItemManipulationScreen(
                     },
                     singleLine = true,
                     label = { Text( text = stringResource(id = R.string.entry_name)
-                    )
+                    ) },
+                    trailingIcon = {
+                        IconButton(onClick = {
+                            val voiceInputIntent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
+                                putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
+                                putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now")
+                            }
+                            voiceInputLauncher.launch(voiceInputIntent)
+                        }) {
+                            Icon(Icons.Filled.Call, contentDescription = "Voice Input")
+                        }
                     })
                 Button(onClick = {
                     coroutineScope.launch {
@@ -74,7 +107,7 @@ fun ItemManipulationScreen(
                     onDismissRequest()
                 },
                     enabled = textFieldValue.isNotEmpty()
-                    ) {
+                ) {
                     Text(text = stringResource(id = R.string.submit))
                 }
             }
