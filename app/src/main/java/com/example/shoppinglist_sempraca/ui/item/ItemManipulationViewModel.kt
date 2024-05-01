@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Repository
-import com.example.shoppinglist_sempraca.ui.BaseViewModel
+import com.example.shoppinglist_sempraca.ui.base.BaseViewModel
 import kotlinx.coroutines.flow.first
 
 //Insert, update, delete items. with validation?

@@ -46,7 +46,7 @@ import com.example.shoppinglist_sempraca.ShoppingListTopBar
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
 import com.example.shoppinglist_sempraca.ui.AppViewModelProvider
-import com.example.shoppinglist_sempraca.ui.BaseScreen
+import com.example.shoppinglist_sempraca.ui.base.BaseScreen
 import com.example.shoppinglist_sempraca.ui.home.HomeDestination.titleRes
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationScreen
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel

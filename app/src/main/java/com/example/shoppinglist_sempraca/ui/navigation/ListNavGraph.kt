@@ -23,8 +23,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.shoppinglist_sempraca.R
-import com.example.shoppinglist_sempraca.ui.ArchiveScreen
 import com.example.shoppinglist_sempraca.ui.chart.ChartScreen
+import com.example.shoppinglist_sempraca.ui.home.ArchiveScreen
 import com.example.shoppinglist_sempraca.ui.home.HomeScreen
 
 /**

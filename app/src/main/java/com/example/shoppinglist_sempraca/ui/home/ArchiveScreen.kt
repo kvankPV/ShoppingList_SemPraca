@@ -1,4 +1,4 @@
-package com.example.shoppinglist_sempraca.ui
+package com.example.shoppinglist_sempraca.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -42,8 +42,9 @@ import com.example.shoppinglist_sempraca.R
 import com.example.shoppinglist_sempraca.ShoppingListTopBar
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
-import com.example.shoppinglist_sempraca.ui.ArchiveDestination.titleRes
-import com.example.shoppinglist_sempraca.ui.home.HomeViewModel
+import com.example.shoppinglist_sempraca.ui.AppViewModelProvider
+import com.example.shoppinglist_sempraca.ui.base.BaseScreen
+import com.example.shoppinglist_sempraca.ui.home.ArchiveDestination.titleRes
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
 import com.example.shoppinglist_sempraca.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch

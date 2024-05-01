@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.shoppinglist_sempraca.data.Product
 import com.example.shoppinglist_sempraca.data.Repository
-import com.example.shoppinglist_sempraca.ui.BaseViewModel
+import com.example.shoppinglist_sempraca.ui.base.BaseViewModel
 
 class ProductManipulationViewModel(private val productsRepository: Repository) : BaseViewModel() {
     var productUiState by mutableStateOf(ProductUiState())

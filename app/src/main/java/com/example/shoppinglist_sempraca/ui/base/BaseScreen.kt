@@ -1,4 +1,4 @@
-package com.example.shoppinglist_sempraca.ui
+package com.example.shoppinglist_sempraca.ui.base
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppinglist_sempraca.R
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
+import com.example.shoppinglist_sempraca.ui.AppViewModelProvider
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationScreen
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
 import com.example.shoppinglist_sempraca.ui.product.ProductManipulationScreen
