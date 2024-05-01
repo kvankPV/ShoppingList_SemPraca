@@ -76,10 +76,10 @@ fun ListNavHost(
         modifier = modifier
     ) {
         composable(route = Screen.List.route) {
-            HomeScreen()
+            HomeScreen().HomeScreen()
         }
         composable(route = Screen.Archive.route) {
-            ArchiveScreen()
+            ArchiveScreen().ArchiveScreen()
         }
         composable(route = Screen.Trends.route) {
             ChartScreen()

@@ -226,7 +226,7 @@ private fun ProductNameTextField(
 ) {
     val voiceInput by viewModel.voiceInput.collectAsState()
 
-    if (voiceInput != textFieldValue) {
+    if (voiceInput != textFieldValue && voiceInput.isNotEmpty()) {
         onTextFieldValueChange(voiceInput)
         onProductValueChange(productUiState.productDetails.copy(name = voiceInput))
     }
