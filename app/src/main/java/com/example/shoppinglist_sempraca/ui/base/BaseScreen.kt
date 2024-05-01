@@ -160,7 +160,7 @@ abstract class BaseScreen {
     }
 
     @Composable
-    protected fun ProductRow(
+    private fun ProductRow(
         product: Product,
         productManipulationViewModel: ProductManipulationViewModel,
         scope: CoroutineScope,

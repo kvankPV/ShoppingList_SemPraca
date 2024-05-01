@@ -18,4 +18,5 @@
     <string name="decrement_quantity">minus sign</string>
     <string name="product_price_label">Product price:\n</string>
     <string name="empty_archive">Empty archive</string>
+    <string name="voice_input">Voice Input:\n</string>
 </resources>

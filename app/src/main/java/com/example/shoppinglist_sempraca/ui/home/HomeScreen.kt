@@ -67,9 +67,6 @@ change occurs, the Activity will be recreated and the rememberCoroutineScope wil
 be cancelled - since the scope is bound to composition.
 */
 
-//Inspired by this source:
-//https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ModalBottomSheet(kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.material3.SheetState,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Color,kotlin.Function0,androidx.compose.foundation.layout.WindowInsets,androidx.compose.material3.ModalBottomSheetProperties,kotlin.Function1)
-
 @OptIn(ExperimentalMaterial3Api::class)
 class HomeScreen (
     private val modifier: Modifier = Modifier
