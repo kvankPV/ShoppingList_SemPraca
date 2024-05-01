@@ -54,7 +54,7 @@ fun ItemManipulationScreen(
 
     val voiceInput by viewModel.voiceInput.collectAsState()
 
-    if (voiceInput != textFieldValue) {
+    if (voiceInput != textFieldValue && voiceInput.isNotEmpty()) {
         textFieldValue = voiceInput
         onItemValueChange(itemUiState.itemDetails.copy(name = voiceInput))
     }
