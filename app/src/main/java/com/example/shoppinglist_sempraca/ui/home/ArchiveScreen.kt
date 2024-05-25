@@ -23,9 +23,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -38,6 +37,8 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.shoppinglist_sempraca.R
 import com.example.shoppinglist_sempraca.ShoppingListTopBar
 import com.example.shoppinglist_sempraca.data.Item
@@ -75,9 +76,7 @@ class ArchiveScreen (
     fun ArchiveScreen(
     ) {
         val homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.factory)
-        val homeUiState by homeViewModel.homeUiState.collectAsState()
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
-        rememberCoroutineScope()
 
         Scaffold(
             modifier = modifier
@@ -91,7 +90,7 @@ class ArchiveScreen (
             },
         ) { innerPadding ->
             ArchiveBody(
-                itemList = homeUiState.itemList,
+                homeUiState = homeViewModel.nonVisibleItemsUiState.collectAsLazyPagingItems(),
                 modifier = modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
@@ -102,22 +101,15 @@ class ArchiveScreen (
 
     @Composable
     private fun ArchiveBody(
-        itemList: List<Item>,
+        homeUiState: LazyPagingItems<Item>,
         modifier: Modifier = Modifier,
         homeViewModel: HomeViewModel
     ) {
-        val hiddenItems = remember(itemList) {
-            derivedStateOf {
-                itemList.filter {
-                    !it.itemVisibility
-                }
-            }
-        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
         ) {
-            if (hiddenItems.value.isEmpty()) {
+            if (homeUiState.itemCount == 0) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -130,7 +122,7 @@ class ArchiveScreen (
                 }
             } else {
                 ShopList(
-                    itemList = hiddenItems.value,
+                    itemList = homeUiState,
                     onItemClick = { item -> homeViewModel.getProductsFromItem(item.itemId) },
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
                     homeViewModel = homeViewModel
@@ -141,19 +133,23 @@ class ArchiveScreen (
 
     @Composable
     private fun ShopList(
-        itemList: List<Item>,
+        itemList: LazyPagingItems<Item>,
         onItemClick: (Item) -> Unit,
         homeViewModel: HomeViewModel,
         modifier: Modifier = Modifier
     ) {
         LazyColumn (modifier = modifier) {
-            items (items = itemList, key = {it.itemId}) {
-                    item -> ListCard (item = item,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) },
-                products = homeViewModel.getProductsFromItem(item.itemId).collectAsState(initial= emptyList()).value
-            )
+            items (itemList.itemSnapshotList.items) { item ->
+                item.let {
+                    val products = homeViewModel.getProductsFromItem(it.itemId).collectAsLazyPagingItems()
+                    ListCard (
+                        item = it,
+                        modifier = Modifier
+                            .padding(dimensionResource(id = R.dimen.padding_small))
+                            .clickable { onItemClick(it) },
+                        products = products
+                    )
+                }
             }
         }
     }
@@ -162,7 +158,7 @@ class ArchiveScreen (
     @Composable
     private fun ListCard(
         item: Item,
-        products: List<Product>,
+        products: LazyPagingItems<Product>,
         modifier: Modifier = Modifier
     ) {
         val (expanded, onExpandedChange) = rememberSaveable { mutableStateOf(false) }
@@ -177,7 +173,26 @@ class ArchiveScreen (
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(id = R.dimen.padding_small))
         ) {
-            CardContent(item, products, expanded, onExpandedChange)
+            val productsSnapshot = products.itemSnapshotList.items
+            val numberOfCheckedOut = remember(productsSnapshot) {
+                derivedStateOf {
+                    productsSnapshot.count { it.productCheckedOut }
+                }
+            }
+            val totalProducts = remember(productsSnapshot) { productsSnapshot.size }
+            val totalPrice = remember(productsSnapshot) {
+                derivedStateOf {
+                    productsSnapshot.sumOf { it.productPrice }
+                }
+            }
+            CardContent(
+                item,
+                numberOfCheckedOut,
+                totalProducts,
+                totalPrice,
+                expanded,
+                onExpandedChange
+            )
             CardDropdownMenu(
                 dropdownMenuExpanded = dropdownMenuExpanded,
                 onDismissRequest = { onDropdownMenuExpandedChange(false) },
@@ -192,7 +207,9 @@ class ArchiveScreen (
     @Composable
     private fun CardContent(
         item: Item,
-        products: List<Product>,
+        numberOfCheckedOut: State<Int>,
+        totalProducts: Int,
+        totalPrice: State<Double>,
         expanded: Boolean,
         onExpandedChange: (Boolean) -> Unit,
         modifier: Modifier = Modifier
@@ -212,21 +229,11 @@ class ArchiveScreen (
                     style = MaterialTheme.typography.titleLarge.copy(color = Color.Gray)
                 )
                 Spacer(Modifier.weight(1f))
-                val numberOfCheckedOut = remember(products) {
-                    derivedStateOf {
-                        products.count { it.productCheckedOut }
-                    }
-                }
                 Text(
-                    text = "${numberOfCheckedOut.value} / ${products.size}",
+                    text = "${numberOfCheckedOut.value} / $totalProducts",
                     style = MaterialTheme.typography.titleMedium
                 )
                 ListItemButton(expanded = expanded, onClick = { onExpandedChange(!expanded) })
-            }
-            val totalPrice = remember(products) {
-                derivedStateOf {
-                    products.sumOf { it.productPrice }
-                }
             }
 
             LaunchedEffect(key1 = totalPrice.value) {
@@ -244,10 +251,10 @@ class ArchiveScreen (
 
     @Composable
     private fun ExpandedCardContent(
-        products: List<Product>,
+        products: LazyPagingItems<Product>,
         modifier: Modifier = Modifier
     ) {
-        if (products.isNotEmpty()) {
+        if (products.itemCount > 0) {
             PrintAllProducts(
                 products = products,
                 modifier = modifier.padding(
@@ -255,8 +262,8 @@ class ArchiveScreen (
                     top = dimensionResource(R.dimen.padding_small),
                     end = dimensionResource(R.dimen.padding_medium),
                     bottom = dimensionResource(R.dimen.padding_medium),
-
-                    )
+                    ),
+                isFromArchiveScreen = true
             )
         }
     }

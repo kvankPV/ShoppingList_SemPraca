@@ -1,5 +1,6 @@
 package com.example.shoppinglist_sempraca.data
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -28,8 +29,14 @@ interface ItemDAO {
     fun getItem(itemId: Int): Flow<Item>
 
     @Query("SELECT * from items")
-    fun getAllItems(): Flow<List<Item>>
+    fun getAllItems(): PagingSource<Int, Item>
 
     @Query("SELECT itemTotalPrice from items where itemVisibility = 0")
     fun getAllPricesFromNonVisible(): Flow<List<Double>>
+
+    @Query("SELECT * FROM items WHERE itemVisibility = 1")
+    fun getVisibleItems(): PagingSource<Int, Item>
+
+    @Query("SELECT * FROM items WHERE itemVisibility = 0")
+    fun getNonVisibleItems(): PagingSource<Int, Item>
 }

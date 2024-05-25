@@ -1,5 +1,6 @@
 package com.example.shoppinglist_sempraca.data
 
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
@@ -26,5 +27,12 @@ interface ProductDAO {
     fun getAllProducts(): Flow<List<Product>>
 
     @Query("SELECT * from products WHERE itemId = :itemId")
-    fun getAllProductsFromItem(itemId: Int): Flow<List<Product>>
+    fun getAllProductsFromItem(itemId: Int): PagingSource<Int, Product>
+
+    @Query("SELECT COUNT(*) from products WHERE itemId = :itemId and productCheckedOut = 1")
+    suspend fun countCheckedOutProductsFromItem(itemId: Int): Int
+
+    @Query("SELECT COUNT(*) from products WHERE itemId = :itemId")
+    suspend fun countAllProductsFromItem(itemId: Int): Int
+
 }

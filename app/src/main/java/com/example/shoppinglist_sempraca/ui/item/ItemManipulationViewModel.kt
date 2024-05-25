@@ -29,7 +29,7 @@ class ItemManipulationViewModel(private val repository: Repository) : BaseViewMo
 
     suspend fun insertItem() {
         if (validateInput()) {
-            repository.insert(itemUiState.itemDetails.toItem())
+            repository.insertStream(itemUiState.itemDetails.toItem())
         }
     }
 
@@ -42,18 +42,18 @@ class ItemManipulationViewModel(private val repository: Repository) : BaseViewMo
 
     suspend fun updateItem() {
         if (validateInput()) {
-            repository.update(itemUiState.itemDetails.toItem())
+            repository.updateStream(itemUiState.itemDetails.toItem())
         }
     }
 
     suspend fun deleteItem(item: Item) {
-        repository.delete(item)
+        repository.deleteStream(item)
     }
 
     suspend fun updateItemTotalPrice(itemId: Int, totalPrice: Double) {
         val item = repository.getItemStream(itemId)
         val updatedItem = item.first()?.copy(itemTotalPrice = totalPrice)
-        repository.update(updatedItem)
+        repository.updateStream(updatedItem)
     }
 
     private fun validateInput(uiState: ItemDetails = itemUiState.itemDetails): Boolean {

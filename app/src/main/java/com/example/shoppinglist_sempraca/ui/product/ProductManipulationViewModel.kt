@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import com.example.shoppinglist_sempraca.data.Product
 import com.example.shoppinglist_sempraca.data.Repository
 import com.example.shoppinglist_sempraca.ui.base.BaseViewModel
+import kotlinx.coroutines.flow.first
 
 class ProductManipulationViewModel(private val productsRepository: Repository) : BaseViewModel() {
     var productUiState by mutableStateOf(ProductUiState())
@@ -19,15 +20,22 @@ class ProductManipulationViewModel(private val productsRepository: Repository) :
     suspend fun insertProduct(itemId: Int) {
         if (validateInput()) {
             val product = productUiState.productDetails.copy(idItem = itemId).toProduct()
-            productsRepository.insert(product)
-            productsRepository.updateItemVisibilityBasedOnProducts(itemId)
+            productsRepository.insertStream(product)
         }
     }
 
     suspend fun updateProduct(product: Product) {
         if (validateInput(product.toProductDetails())) {
-            productsRepository.update(product)
-            productsRepository.updateItemVisibilityBasedOnProducts(product.itemId)
+            productsRepository.updateStream(product)
+            val checkedOutAmount = productsRepository.countAllCheckedOutProductsFromItemStream(product.itemId)
+            val totalAmount = productsRepository.countAllProductsFromItemStream(product.itemId)
+            if (checkedOutAmount == totalAmount) {
+                val item = productsRepository.getItemStream(product.itemId).first()
+                if (item != null) {
+                    val updatedItem = item.copy(itemVisibility = false)
+                    productsRepository.updateStream(updatedItem)
+                }
+            }
         }
     }
 
@@ -36,8 +44,7 @@ class ProductManipulationViewModel(private val productsRepository: Repository) :
     }
 
     suspend fun deleteProduct(product: Product) {
-        productsRepository.delete(product)
-        productsRepository.updateItemVisibilityBasedOnProducts(product.itemId)
+        productsRepository.deleteStream(product)
     }
 
     private fun validateInput(uiState: ProductDetails = productUiState.productDetails): Boolean {

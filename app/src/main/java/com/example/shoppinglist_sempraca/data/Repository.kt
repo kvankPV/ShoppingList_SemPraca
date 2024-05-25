@@ -1,5 +1,6 @@
 package com.example.shoppinglist_sempraca.data
 
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -7,12 +8,15 @@ import kotlinx.coroutines.flow.Flow
  * from a given data source.
  */
 interface Repository {
-    suspend fun <T> insert(entity: T)
-    suspend fun <T> delete(entity: T)
-    suspend fun <T> update(entity: T)
+    suspend fun <T> insertStream(entity: T)
+    suspend fun <T> deleteStream(entity: T)
+    suspend fun <T> updateStream(entity: T)
     fun getItemStream(idItem: Int) : Flow<Item?>
-    fun getAllItemsStream(): Flow<List<Item>>
-    fun getAllProductsFromItemStream(idItem: Int): Flow<List<Product>>
-    fun getAllPricesFromNonVisibleItems(): Flow<List<Double>>
-    suspend fun updateItemVisibilityBasedOnProducts(itemId: Int)
+    fun getAllItemsStream(): Flow<PagingData<Item>>
+    fun getVisibleItemsStream(): Flow<PagingData<Item>>
+    fun getNonVisibleItemsStream(): Flow<PagingData<Item>>
+    fun getAllProductsFromItemStream(idItem: Int): Flow<PagingData<Product>>
+    fun getAllPricesFromNonVisibleItemsStream(): Flow<List<Double>>
+    suspend fun countAllCheckedOutProductsFromItemStream(idItem: Int): Int
+    suspend fun countAllProductsFromItemStream(idItem: Int): Int
 }

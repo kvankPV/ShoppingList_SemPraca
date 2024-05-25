@@ -1,3 +1,4 @@
+
 plugins {
     id("com.google.devtools.ksp")
     alias(libs.plugins.androidApplication)
@@ -30,10 +31,6 @@ android {
             )
         }
     }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
     kotlinOptions {
         jvmTarget = "1.8"
     }
@@ -53,8 +50,10 @@ android {
 
 dependencies {
     implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.paging.runtime)
+    implementation (libs.androidx.room.paging)
+    implementation(libs.paging.compose)
     ksp(libs.androidx.room.compiler)
-    // optional - Kotlin Extensions and Coroutines support for Room
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
