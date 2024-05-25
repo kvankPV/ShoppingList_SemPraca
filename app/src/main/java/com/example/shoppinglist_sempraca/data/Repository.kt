@@ -19,4 +19,7 @@ interface Repository {
     fun getAllPricesFromNonVisibleItemsStream(): Flow<List<Double>>
     suspend fun countAllCheckedOutProductsFromItemStream(idItem: Int): Int
     suspend fun countAllProductsFromItemStream(idItem: Int): Int
+    suspend fun countItemsWithTotalStream(): Int
+    suspend fun countNonVisibleItemsStream(): Int
+    suspend fun sumOfAllProductsStream(idItem: Int): Double
 }

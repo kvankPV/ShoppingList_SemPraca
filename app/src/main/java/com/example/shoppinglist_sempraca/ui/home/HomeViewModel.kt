@@ -34,8 +34,8 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
-
     fun getProductsFromItem(idItem: Int): Flow<PagingData<Product>> {
         return repository.getAllProductsFromItemStream(idItem)
     }
+
 }

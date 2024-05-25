@@ -35,4 +35,7 @@ interface ProductDAO {
     @Query("SELECT COUNT(*) from products WHERE itemId = :itemId")
     suspend fun countAllProductsFromItem(itemId: Int): Int
 
+    @Query("select sum(productPrice) from products where productPrice > 0.0 and itemId = :itemId")
+    suspend fun sumOfCheckedOutProducts(itemId: Int): Double
+
 }

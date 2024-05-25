@@ -39,4 +39,10 @@ interface ItemDAO {
 
     @Query("SELECT * FROM items WHERE itemVisibility = 0")
     fun getNonVisibleItems(): PagingSource<Int, Item>
+
+    @Query("select count(*) from items where itemTotalPrice > 0.0")
+    fun getCountItemsWithTotal(): Int
+
+    @Query("select count(*) from items where itemVisibility = 0")
+    fun getCountOfNonVisibleItems(): Int
 }

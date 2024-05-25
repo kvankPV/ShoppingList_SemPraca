@@ -159,7 +159,7 @@ class ArchiveScreen (
     private fun ListCard(
         item: Item,
         products: LazyPagingItems<Product>,
-        modifier: Modifier = Modifier
+        modifier: Modifier = Modifier,
     ) {
         val (expanded, onExpandedChange) = rememberSaveable { mutableStateOf(false) }
         val (dropdownMenuExpanded, onDropdownMenuExpandedChange) = rememberSaveable {
@@ -179,7 +179,11 @@ class ArchiveScreen (
                     productsSnapshot.count { it.productCheckedOut }
                 }
             }
-            val totalProducts = remember(productsSnapshot) { productsSnapshot.size }
+            val totalProducts = remember(productsSnapshot) {
+                derivedStateOf {
+                    productsSnapshot.size
+                }
+            }
             val totalPrice = remember(productsSnapshot) {
                 derivedStateOf {
                     productsSnapshot.sumOf { it.productPrice }
@@ -208,7 +212,7 @@ class ArchiveScreen (
     private fun CardContent(
         item: Item,
         numberOfCheckedOut: State<Int>,
-        totalProducts: Int,
+        totalProducts: State<Int>,
         totalPrice: State<Double>,
         expanded: Boolean,
         onExpandedChange: (Boolean) -> Unit,
@@ -230,7 +234,7 @@ class ArchiveScreen (
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "${numberOfCheckedOut.value} / $totalProducts",
+                    text = "${numberOfCheckedOut.value} / ${totalProducts.value}",
                     style = MaterialTheme.typography.titleMedium
                 )
                 ListItemButton(expanded = expanded, onClick = { onExpandedChange(!expanded) })

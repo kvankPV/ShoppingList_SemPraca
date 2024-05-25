@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -248,7 +247,7 @@ private fun ProductNameTextField(
                 }
                 voiceInputLauncher.launch(voiceInputIntent)
             }) {
-                Icon(Icons.Filled.Call, contentDescription = "Voice Input")
+                Icon(painter = painterResource(id = R.drawable.baseline_mic_24), contentDescription = "Voice Input")
             }
         }
     )

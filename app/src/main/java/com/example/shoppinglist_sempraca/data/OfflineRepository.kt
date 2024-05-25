@@ -68,4 +68,16 @@ class OfflineRepository(private val itemDao:ItemDAO, private val productDao: Pro
         return productDao.countAllProductsFromItem(idItem)
     }
 
+    override suspend fun countItemsWithTotalStream(): Int {
+        return itemDao.getCountItemsWithTotal()
+    }
+
+    override suspend fun countNonVisibleItemsStream(): Int {
+        return itemDao.getCountOfNonVisibleItems()
+    }
+
+    override suspend fun sumOfAllProductsStream(idItem: Int): Double {
+        return productDao.sumOfCheckedOutProducts(idItem)
+    }
+
 }
