@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -28,7 +27,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -103,7 +101,7 @@ class HomeScreen (
             },
         ) { innerPadding ->
             HomeBody(
-                homeUiState = homeViewModel.visibleItemsUiState.collectAsLazyPagingItems(),
+                homeUiState = homeViewModel.visibleItemsUiState.collectAsLazyPagingItems().itemSnapshotList.items,
                 modifier = modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
@@ -126,7 +124,7 @@ class HomeScreen (
 
     @Composable
     private fun HomeBody(
-        homeUiState: LazyPagingItems<Item>,
+        homeUiState: List<Item>,
         modifier: Modifier = Modifier,
         homeViewModel: HomeViewModel
     ) {
@@ -134,7 +132,7 @@ class HomeScreen (
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
         ) {
-            if (homeUiState.itemCount == 0) {
+            if (homeUiState.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -158,19 +156,19 @@ class HomeScreen (
 
     @Composable
     private fun ShopList(
-        itemList: LazyPagingItems<Item>,
+        itemList: List<Item>,
         onItemClick: (Item) -> Unit,
         homeViewModel: HomeViewModel,
         modifier: Modifier = Modifier
     ) {
         LazyColumn (modifier = modifier) {
-            items (itemList.itemSnapshotList.items) { item ->
-                val products = homeViewModel.getProductsFromItem(item.itemId).collectAsLazyPagingItems()
+            items(count = itemList.size) { index ->
+                val products = homeViewModel.getProductsFromItem(itemList[index].itemId).collectAsLazyPagingItems()
                 ListCard (
-                    item = item,
+                    item = itemList[index],
                     modifier = Modifier
                         .padding(dimensionResource(id = R.dimen.padding_small))
-                        .clickable { onItemClick(item) },
+                        .clickable { onItemClick(itemList[index]) },
                     products = products
                 )
             }
@@ -194,20 +192,18 @@ class HomeScreen (
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(id = R.dimen.padding_small))
         ) {
-            val (numberOfCheckedOut, totalProducts) = remember(products.itemSnapshotList.items) {
-                val items = products.itemSnapshotList.items
-                val checkedOutCount = items.count { it.productCheckedOut }
-                val totalCount = items.size
-                Pair(checkedOutCount, totalCount)
-            }
-            CardContent(item, numberOfCheckedOut, totalProducts, expanded, onExpandedChange)
+            val productList = products.itemSnapshotList.items
+            val checkedOutCount = productList.count { it.productCheckedOut }
+            val totalCount = productList.size
+
+            CardContent(item, checkedOutCount, totalCount, expanded, onExpandedChange)
             CardDropdownMenu(
                 dropdownMenuExpanded = dropdownMenuExpanded,
                 onDismissRequest = { onDropdownMenuExpandedChange(false) },
                 item = item
             )
             if (expanded) {
-                ExpandedCardContent(products, item)
+                ExpandedCardContent(productList, item)
             }
         }
     }
@@ -241,7 +237,7 @@ class HomeScreen (
 
     @Composable
     private fun ExpandedCardContent(
-        products: LazyPagingItems<Product>,
+        products: List<Product>,
         item: Item,
         modifier: Modifier = Modifier
     ) {
@@ -250,7 +246,7 @@ class HomeScreen (
             viewModel(factory = AppViewModelProvider.factory)
         var addProduct by rememberSaveable { mutableStateOf(false) }
 
-        if (products.itemCount > 0) {
+        if (products.isNotEmpty()) {
             PrintAllProducts(
                 products = products,
                 modifier = modifier.padding(

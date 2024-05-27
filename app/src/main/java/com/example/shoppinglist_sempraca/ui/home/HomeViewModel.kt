@@ -37,5 +37,4 @@ class HomeViewModel(private val repository: Repository) : ViewModel() {
     fun getProductsFromItem(idItem: Int): Flow<PagingData<Product>> {
         return repository.getAllProductsFromItemStream(idItem)
     }
-
 }

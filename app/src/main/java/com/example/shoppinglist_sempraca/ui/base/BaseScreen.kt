@@ -30,7 +30,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.paging.compose.LazyPagingItems
 import com.example.shoppinglist_sempraca.R
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
@@ -112,7 +111,7 @@ abstract class BaseScreen {
 
     @Composable
     protected fun PrintAllProducts(
-        products: LazyPagingItems<Product>,
+        products: List<Product>,
         isFromArchiveScreen: Boolean,
         modifier: Modifier = Modifier
     ) {
@@ -121,7 +120,7 @@ abstract class BaseScreen {
         var enabledEditing by rememberSaveable { mutableStateOf(false) }
 
         Column(modifier = modifier) {
-            products.itemSnapshotList.items.forEach { product ->
+            products.forEach { product ->
                 ProductRow(
                     product = product,
                     productManipulationViewModel = productManipulationViewModel,
