@@ -1,4 +1,4 @@
-package com.example.shoppinglist_sempraca.ui
+package com.example.shoppinglist_sempraca.ui.base
 
 import android.content.Intent
 import android.speech.RecognizerIntent

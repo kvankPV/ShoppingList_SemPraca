@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
@@ -26,11 +25,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -41,12 +37,14 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.shoppinglist_sempraca.R
 import com.example.shoppinglist_sempraca.ShoppingListTopBar
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
 import com.example.shoppinglist_sempraca.ui.AppViewModelProvider
-import com.example.shoppinglist_sempraca.ui.BaseScreen
+import com.example.shoppinglist_sempraca.ui.base.BaseScreen
 import com.example.shoppinglist_sempraca.ui.home.HomeDestination.titleRes
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationScreen
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
@@ -67,9 +65,6 @@ change occurs, the Activity will be recreated and the rememberCoroutineScope wil
 be cancelled - since the scope is bound to composition.
 */
 
-//Inspired by this source:
-//https://developer.android.com/reference/kotlin/androidx/compose/material3/package-summary#ModalBottomSheet(kotlin.Function0,androidx.compose.ui.Modifier,androidx.compose.material3.SheetState,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Shape,androidx.compose.ui.graphics.Color,androidx.compose.ui.graphics.Color,androidx.compose.ui.unit.Dp,androidx.compose.ui.graphics.Color,kotlin.Function0,androidx.compose.foundation.layout.WindowInsets,androidx.compose.material3.ModalBottomSheetProperties,kotlin.Function1)
-
 @OptIn(ExperimentalMaterial3Api::class)
 class HomeScreen (
     private val modifier: Modifier = Modifier
@@ -78,7 +73,6 @@ class HomeScreen (
     @Composable
     fun HomeScreen() {
         val homeViewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.factory)
-        val homeUiState by homeViewModel.homeUiState.collectAsState()
         val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
         var showItemAddScreen by rememberSaveable { mutableStateOf(false) }
         val scope = rememberCoroutineScope()
@@ -107,7 +101,7 @@ class HomeScreen (
             },
         ) { innerPadding ->
             HomeBody(
-                itemList = homeUiState.itemList,
+                homeUiState = homeViewModel.visibleItemsUiState.collectAsLazyPagingItems().itemSnapshotList.items,
                 modifier = modifier
                     .padding(innerPadding)
                     .fillMaxSize(),
@@ -130,22 +124,15 @@ class HomeScreen (
 
     @Composable
     private fun HomeBody(
-        itemList: List<Item>,
+        homeUiState: List<Item>,
         modifier: Modifier = Modifier,
         homeViewModel: HomeViewModel
     ) {
-        val visibleItems = remember(itemList) {
-            derivedStateOf {
-                itemList.filter {
-                    it.itemVisibility
-                }
-            }
-        }
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
         ) {
-            if (visibleItems.value.isEmpty()) {
+            if (homeUiState.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -158,7 +145,7 @@ class HomeScreen (
                 }
             } else {
                 ShopList(
-                    itemList = visibleItems.value,
+                    itemList = homeUiState,
                     onItemClick = { item -> homeViewModel.getProductsFromItem(item.itemId) },
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
                     homeViewModel = homeViewModel
@@ -175,13 +162,15 @@ class HomeScreen (
         modifier: Modifier = Modifier
     ) {
         LazyColumn (modifier = modifier) {
-            items (items = itemList, key = {it.itemId}) {
-                    item -> ListCard (item = item,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) },
-                products = homeViewModel.getProductsFromItem(item.itemId).collectAsState(initial= emptyList()).value
-            )
+            items(count = itemList.size) { index ->
+                val products = homeViewModel.getProductsFromItem(itemList[index].itemId).collectAsLazyPagingItems()
+                ListCard (
+                    item = itemList[index],
+                    modifier = Modifier
+                        .padding(dimensionResource(id = R.dimen.padding_small))
+                        .clickable { onItemClick(itemList[index]) },
+                    products = products
+                )
             }
         }
     }
@@ -190,15 +179,11 @@ class HomeScreen (
     @Composable
     private fun ListCard(
         item: Item,
-        products: List<Product>,
+        products: LazyPagingItems<Product>,
         modifier: Modifier = Modifier
     ) {
         val (expanded, onExpandedChange) = rememberSaveable { mutableStateOf(false) }
-        val (dropdownMenuExpanded, onDropdownMenuExpandedChange) = rememberSaveable {
-            mutableStateOf(
-                false
-            )
-        }
+        val (dropdownMenuExpanded, onDropdownMenuExpandedChange) = rememberSaveable { mutableStateOf(false) }
 
         Card(
             modifier = modifier.combinedClickable(
@@ -207,14 +192,18 @@ class HomeScreen (
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(id = R.dimen.padding_small))
         ) {
-            CardContent(item, products, expanded, onExpandedChange)
+            val productList = products.itemSnapshotList.items
+            val checkedOutCount = productList.count { it.productCheckedOut }
+            val totalCount = productList.size
+
+            CardContent(item, checkedOutCount, totalCount, expanded, onExpandedChange)
             CardDropdownMenu(
                 dropdownMenuExpanded = dropdownMenuExpanded,
                 onDismissRequest = { onDropdownMenuExpandedChange(false) },
                 item = item
             )
             if (expanded) {
-                ExpandedCardContent(products, item)
+                ExpandedCardContent(productList, item)
             }
         }
     }
@@ -222,7 +211,8 @@ class HomeScreen (
     @Composable
     private fun CardContent(
         item: Item,
-        products: List<Product>,
+        numberOfCheckedOut: Int,
+        totalProducts: Int,
         expanded: Boolean,
         onExpandedChange: (Boolean) -> Unit,
         modifier: Modifier = Modifier
@@ -236,13 +226,8 @@ class HomeScreen (
             ) {
                 Text(text = item.itemName, style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.weight(1f))
-                val numberOfCheckedOut = remember(products) {
-                    derivedStateOf {
-                        products.count { it.productCheckedOut }
-                    }
-                }
                 Text(
-                    text = "${numberOfCheckedOut.value} / ${products.size}",
+                    text = "$numberOfCheckedOut / $totalProducts",
                     style = MaterialTheme.typography.titleMedium
                 )
                 ListItemButton(expanded = expanded, onClick = { onExpandedChange(!expanded) })
@@ -269,8 +254,8 @@ class HomeScreen (
                     top = dimensionResource(R.dimen.padding_small),
                     end = dimensionResource(R.dimen.padding_medium),
                     bottom = dimensionResource(R.dimen.padding_medium),
-
-                    )
+                    ),
+                isFromArchiveScreen = false
             )
         }
 

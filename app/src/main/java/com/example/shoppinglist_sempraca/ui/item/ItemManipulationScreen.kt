@@ -8,8 +8,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +26,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import com.example.shoppinglist_sempraca.R
 import kotlinx.coroutines.launch
 
@@ -95,7 +95,7 @@ fun ItemManipulationScreen(
                             }
                             voiceInputLauncher.launch(voiceInputIntent)
                         }) {
-                            Icon(Icons.Filled.Call, contentDescription = "Voice Input")
+                            Icon(ImageVector.vectorResource(id = R.drawable.baseline_mic_24), contentDescription = stringResource(id = R.string.voice_input))
                         }
                     })
                 Button(onClick = {

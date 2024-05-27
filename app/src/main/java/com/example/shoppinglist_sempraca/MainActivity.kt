@@ -22,7 +22,6 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     ShoppingListApp()
-                    /*TODO pridat hlasovy vstup pre zadavanie*/
                 }
             }
         }

@@ -1,24 +1,24 @@
-[versions]
-agp = "8.3.2"
-kotlin = "1.9.23"
-
 [libraries]
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.13.0" }
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version = "1.13.1" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version = "2.6.1" }
 androidx-room-compiler = { module = "androidx.room:room-compiler", version = "2.6.1" }
+androidx-room-paging = { module = "androidx.room:room-paging", version = "2.6.1" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version = "2.6.1" }
+androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version = "3.3.0" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version = "2.9.0" }
+paging-compose = { module = "androidx.paging:paging-compose", version = "3.3.0" }
 junit = { group = "junit", name = "junit", version = "4.13.2" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version = "1.1.5" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version = "3.5.1" }
-androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version = "2.7.0" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version = "2.8.0" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version = "1.9.0" }
-androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version = "2024.04.01" }
-androidx-ui = { group = "androidx.compose.ui", name = "ui", version = "1.6.6" }
-androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version = "1.6.6" }
-androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version = "1.6.6" }
-androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version = "1.6.6" }
-androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version = "1.6.6" }
-androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version = "1.6.6" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version = "2024.05.00" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui", version = "1.6.7" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics", version = "1.6.7" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling", version = "1.6.7" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview", version = "1.6.7" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest", version = "1.6.7" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4", version = "1.6.7" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version = "1.2.1" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version = "2.7.7" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version = "2.7.7" }
@@ -28,6 +28,6 @@ junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version = "5.10.2"
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version = "1.14.0" }
 
 [plugins]
-androidApplication = { id = "com.android.application", version.ref = "agp" }
-jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+androidApplication = { id = "com.android.application", version = "8.4.1" }
+jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version = "1.9.23" }
 

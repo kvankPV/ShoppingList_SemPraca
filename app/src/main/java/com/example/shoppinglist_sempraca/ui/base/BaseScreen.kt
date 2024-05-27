@@ -1,4 +1,4 @@
-package com.example.shoppinglist_sempraca.ui
+package com.example.shoppinglist_sempraca.ui.base
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,6 +33,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.shoppinglist_sempraca.R
 import com.example.shoppinglist_sempraca.data.Item
 import com.example.shoppinglist_sempraca.data.Product
+import com.example.shoppinglist_sempraca.ui.AppViewModelProvider
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationScreen
 import com.example.shoppinglist_sempraca.ui.item.ItemManipulationViewModel
 import com.example.shoppinglist_sempraca.ui.product.ProductManipulationScreen
@@ -111,20 +112,15 @@ abstract class BaseScreen {
     @Composable
     protected fun PrintAllProducts(
         products: List<Product>,
+        isFromArchiveScreen: Boolean,
         modifier: Modifier = Modifier
     ) {
         val scope = rememberCoroutineScope()
         val productManipulationViewModel: ProductManipulationViewModel = viewModel(factory = AppViewModelProvider.factory)
         var enabledEditing by rememberSaveable { mutableStateOf(false) }
 
-        val sortedProducts = remember(products) {
-            derivedStateOf {
-                products.sortedWith(compareBy({ !it.productCheckedOut }, { it.productName }))
-            }
-        }
-
         Column(modifier = modifier) {
-            sortedProducts.value.forEach { product ->
+            products.forEach { product ->
                 ProductRow(
                     product = product,
                     productManipulationViewModel = productManipulationViewModel,
@@ -152,14 +148,14 @@ abstract class BaseScreen {
                 },
                 onDismissRequest = { enabledEditing = false },
                 isAddingNewProduct = false,
-                isFromArchiveScreen = false,
+                isFromArchiveScreen = isFromArchiveScreen,
                 viewModel = productManipulationViewModel
             )
         }
     }
 
     @Composable
-    protected fun ProductRow(
+    private fun ProductRow(
         product: Product,
         productManipulationViewModel: ProductManipulationViewModel,
         scope: CoroutineScope,

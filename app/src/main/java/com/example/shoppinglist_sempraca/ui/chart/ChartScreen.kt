@@ -89,6 +89,17 @@ fun ChartScreen(
         }
     }
 }
+/**
+ * This function is responsible for rendering the chart on the screen.
+ * It checks if there are any invisible items in the chartViewModel.
+ * If there are, it creates a column chart and a line chart, and then combines them into a composed chart.
+ * It then creates a model producer for the composed chart using the invisible items and cumulative averages from the chartViewModel.
+ * An integer axis value formatter is created for the start axis of the chart.
+ * Finally, it uses the ProvideChartStyle Composable to apply a style to the chart and displays the chart on the screen.
+ *
+ * @param chartViewModel The ViewModel that provides the data for the chart.
+ * @param modifier The Modifier to be applied to the Chart Composable.
+ */
 
 @Composable
 fun ChartRender(chartViewModel: ChartViewModel, modifier: Modifier) {

@@ -22,7 +22,7 @@ class ChartViewModel(private val repository: Repository) : ViewModel() {
     }
 
     suspend fun fetchInvisibleItems() {
-        val items = repository.getAllPricesFromNonVisibleItems().first()
+        val items = repository.getAllPricesFromNonVisibleItemsStream().first()
         invisibleItems.value = items
         cumulativeAverages.value = getCumulativeAverages()
     }

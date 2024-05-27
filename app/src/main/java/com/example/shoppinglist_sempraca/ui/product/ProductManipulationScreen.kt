@@ -3,6 +3,7 @@ package com.example.shoppinglist_sempraca.ui.product
 import android.app.Activity
 import android.content.Intent
 import android.speech.RecognizerIntent
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Call
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
@@ -248,7 +248,7 @@ private fun ProductNameTextField(
                 }
                 voiceInputLauncher.launch(voiceInputIntent)
             }) {
-                Icon(Icons.Filled.Call, contentDescription = "Voice Input")
+                Icon(painter = painterResource(id = R.drawable.baseline_mic_24), contentDescription = "Voice Input")
             }
         }
     )
@@ -309,11 +309,18 @@ private fun ProductQuantityField(
     modifier: Modifier = Modifier,
     onProductValueChange: (ProductDetails) -> Unit
 ) {
+    val context = LocalContext.current
+
     OutlinedTextField(
         value = productQuantity,
         onValueChange = { newValue ->
-            onProductQuantityChange(newValue)
-            onProductValueChange(productUiState.productDetails.copy(quantity = newValue))
+            val newQuantity = newValue.toIntOrNull()
+            if (newQuantity != null && newQuantity < 0) {
+                Toast.makeText(context, "Quantity cannot be negative", Toast.LENGTH_SHORT).show()
+            } else {
+                onProductQuantityChange(newValue)
+                onProductValueChange(productUiState.productDetails.copy(quantity = newValue))
+            }
         },
         singleLine = true,
         label = { Text(stringResource(id = R.string.product_quantity_label)) },
