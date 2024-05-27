@@ -45,7 +45,6 @@ class OfflineRepository(private val itemDao:ItemDAO, private val productDao: Pro
         }.flow
     }
 
-
     override fun getAllProductsFromItemStream(idItem: Int): Flow<PagingData<Product>> {
         return Pager(PagingConfig(pageSize = 20)) {
             productDao.getAllProductsFromItem(idItem)
