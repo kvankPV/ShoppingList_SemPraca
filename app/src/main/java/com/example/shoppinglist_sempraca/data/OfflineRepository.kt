@@ -32,11 +32,6 @@ class OfflineRepository(private val itemDao:ItemDAO, private val productDao: Pro
     }
 
     override fun getItemStream(idItem: Int): Flow<Item?> = itemDao.getItem(idItem)
-    override fun getAllItemsStream(): Flow<PagingData<Item>> {
-        return Pager(PagingConfig(pageSize = 20)) {
-            itemDao.getAllItems()
-        }.flow
-    }
 
     override fun getVisibleItemsStream(): Flow<PagingData<Item>> {
         return Pager(PagingConfig(pageSize = 50)) {
@@ -75,9 +70,4 @@ class OfflineRepository(private val itemDao:ItemDAO, private val productDao: Pro
     override suspend fun countNonVisibleItemsStream(): Int {
         return itemDao.getCountOfNonVisibleItems()
     }
-
-    override suspend fun sumOfAllProductsStream(idItem: Int): Double {
-        return productDao.sumOfCheckedOutProducts(idItem)
-    }
-
 }

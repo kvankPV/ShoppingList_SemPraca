@@ -28,9 +28,6 @@ interface ItemDAO {
     @Query("SELECT * from items WHERE itemId = :itemId")
     fun getItem(itemId: Int): Flow<Item>
 
-    @Query("SELECT * from items")
-    fun getAllItems(): PagingSource<Int, Item>
-
     @Query("SELECT itemTotalPrice from items where itemVisibility = 0")
     fun getAllPricesFromNonVisible(): Flow<List<Double>>
 

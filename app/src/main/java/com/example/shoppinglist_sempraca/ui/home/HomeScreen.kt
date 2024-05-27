@@ -26,8 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -196,10 +194,12 @@ class HomeScreen (
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(id = R.dimen.padding_small))
         ) {
-            val productsSnapshot = products.itemSnapshotList.items
-            val numberOfCheckedOut = remember(productsSnapshot) {
-                derivedStateOf { productsSnapshot.count { it.productCheckedOut } } }
-            val totalProducts = remember(productsSnapshot) { productsSnapshot.size }
+            val (numberOfCheckedOut, totalProducts) = remember(products.itemSnapshotList.items) {
+                val items = products.itemSnapshotList.items
+                val checkedOutCount = items.count { it.productCheckedOut }
+                val totalCount = items.size
+                Pair(checkedOutCount, totalCount)
+            }
             CardContent(item, numberOfCheckedOut, totalProducts, expanded, onExpandedChange)
             CardDropdownMenu(
                 dropdownMenuExpanded = dropdownMenuExpanded,
@@ -215,7 +215,7 @@ class HomeScreen (
     @Composable
     private fun CardContent(
         item: Item,
-        numberOfCheckedOut: State<Int>,
+        numberOfCheckedOut: Int,
         totalProducts: Int,
         expanded: Boolean,
         onExpandedChange: (Boolean) -> Unit,
@@ -231,7 +231,7 @@ class HomeScreen (
                 Text(text = item.itemName, style = MaterialTheme.typography.titleLarge)
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "${numberOfCheckedOut.value} / $totalProducts",
+                    text = "$numberOfCheckedOut / $totalProducts",
                     style = MaterialTheme.typography.titleMedium
                 )
                 ListItemButton(expanded = expanded, onClick = { onExpandedChange(!expanded) })

@@ -12,7 +12,6 @@ interface Repository {
     suspend fun <T> deleteStream(entity: T)
     suspend fun <T> updateStream(entity: T)
     fun getItemStream(idItem: Int) : Flow<Item?>
-    fun getAllItemsStream(): Flow<PagingData<Item>>
     fun getVisibleItemsStream(): Flow<PagingData<Item>>
     fun getNonVisibleItemsStream(): Flow<PagingData<Item>>
     fun getAllProductsFromItemStream(idItem: Int): Flow<PagingData<Product>>
@@ -21,5 +20,4 @@ interface Repository {
     suspend fun countAllProductsFromItemStream(idItem: Int): Int
     suspend fun countItemsWithTotalStream(): Int
     suspend fun countNonVisibleItemsStream(): Int
-    suspend fun sumOfAllProductsStream(idItem: Int): Double
 }

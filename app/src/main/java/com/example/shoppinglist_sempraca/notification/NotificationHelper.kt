@@ -1,6 +1,7 @@
-package com.example.shoppinglist_sempraca
+package com.example.shoppinglist_sempraca.notification
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
@@ -8,6 +9,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import com.example.shoppinglist_sempraca.R
 
 class NotificationHelper(private val context: Context) {
 
@@ -30,6 +32,7 @@ class NotificationHelper(private val context: Context) {
         notificationManager.createNotificationChannel(channel)
     }
 
+    @SuppressLint("MissingPermission")
     fun createNotification(title: String, content: String, notificationId: Int) {
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.baseline_notifications_24)

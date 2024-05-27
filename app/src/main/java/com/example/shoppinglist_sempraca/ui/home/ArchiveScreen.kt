@@ -23,8 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.State
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -173,21 +171,12 @@ class ArchiveScreen (
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = dimensionResource(id = R.dimen.padding_small))
         ) {
-            val productsSnapshot = products.itemSnapshotList.items
-            val numberOfCheckedOut = remember(productsSnapshot) {
-                derivedStateOf {
-                    productsSnapshot.count { it.productCheckedOut }
-                }
-            }
-            val totalProducts = remember(productsSnapshot) {
-                derivedStateOf {
-                    productsSnapshot.size
-                }
-            }
-            val totalPrice = remember(productsSnapshot) {
-                derivedStateOf {
-                    productsSnapshot.sumOf { it.productPrice }
-                }
+            val (numberOfCheckedOut, totalProducts, totalPrice) = remember(products.itemSnapshotList.items) {
+                val items = products.itemSnapshotList.items
+                val checkedOutCount = items.count { it.productCheckedOut }
+                val totalCount = items.size
+                val totalCost = items.sumOf { it.productPrice }
+                Triple(checkedOutCount, totalCount, totalCost)
             }
             CardContent(
                 item,
@@ -211,9 +200,9 @@ class ArchiveScreen (
     @Composable
     private fun CardContent(
         item: Item,
-        numberOfCheckedOut: State<Int>,
-        totalProducts: State<Int>,
-        totalPrice: State<Double>,
+        numberOfCheckedOut: Int,
+        totalProducts: Int,
+        totalPrice: Double,
         expanded: Boolean,
         onExpandedChange: (Boolean) -> Unit,
         modifier: Modifier = Modifier
@@ -234,20 +223,20 @@ class ArchiveScreen (
                 )
                 Spacer(Modifier.weight(1f))
                 Text(
-                    text = "${numberOfCheckedOut.value} / ${totalProducts.value}",
+                    text = "$numberOfCheckedOut / $totalProducts",
                     style = MaterialTheme.typography.titleMedium
                 )
                 ListItemButton(expanded = expanded, onClick = { onExpandedChange(!expanded) })
             }
 
-            LaunchedEffect(key1 = totalPrice.value) {
+            LaunchedEffect(key1 = totalPrice) {
                 scope.launch {
-                    itemManipulationViewModel.updateItemTotalPrice(item.itemId, totalPrice.value)
+                    itemManipulationViewModel.updateItemTotalPrice(item.itemId, totalPrice)
                 }
             }
 
             Text(
-                text = "Total price: ${totalPrice.value} $",
+                text = "Total price: $totalPrice $",
                 style = MaterialTheme.typography.titleMedium
             )
         }

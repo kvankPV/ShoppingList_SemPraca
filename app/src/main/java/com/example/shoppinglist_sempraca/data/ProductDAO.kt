@@ -7,7 +7,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ProductDAO {
@@ -20,12 +19,6 @@ interface ProductDAO {
     @Delete
     suspend fun deleteProduct(product: Product)
 
-    @Query("SELECT * from products WHERE productId = :productId and itemId = :itemId")
-    fun getProduct(productId: Int, itemId: Int): Flow<Product>
-
-    @Query("SELECT * from products")
-    fun getAllProducts(): Flow<List<Product>>
-
     @Query("SELECT * from products WHERE itemId = :itemId")
     fun getAllProductsFromItem(itemId: Int): PagingSource<Int, Product>
 
@@ -34,8 +27,4 @@ interface ProductDAO {
 
     @Query("SELECT COUNT(*) from products WHERE itemId = :itemId")
     suspend fun countAllProductsFromItem(itemId: Int): Int
-
-    @Query("select sum(productPrice) from products where productPrice > 0.0 and itemId = :itemId")
-    suspend fun sumOfCheckedOutProducts(itemId: Int): Double
-
 }

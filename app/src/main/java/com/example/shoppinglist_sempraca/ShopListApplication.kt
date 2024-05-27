@@ -6,6 +6,8 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.shoppinglist_sempraca.data.AppContainer
 import com.example.shoppinglist_sempraca.data.AppDataContainer
+import com.example.shoppinglist_sempraca.notification.CheckWorker
+import com.example.shoppinglist_sempraca.notification.CheckWorkerFactory
 import java.util.concurrent.TimeUnit
 
 class ShopListApplication : Application() {

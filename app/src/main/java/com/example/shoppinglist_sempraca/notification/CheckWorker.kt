@@ -1,4 +1,4 @@
-package com.example.shoppinglist_sempraca
+package com.example.shoppinglist_sempraca.notification
 
 import android.content.Context
 import androidx.work.CoroutineWorker
